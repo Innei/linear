@@ -48,7 +48,7 @@
     "click-to-react-component": "1.1.2",
     "daisyui": "4.12.14",
     "eslint": "9.14.0",
-    "eslint-config-hyoban": "3.1.12",
+    "eslint-config-hyoban": "3.1.13",
     "lint-staged": "15.2.10",
     "postcss": "8.4.47",
     "postcss-import": "16.1.0",
