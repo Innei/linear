@@ -1,12 +1,15 @@
 @tailwind base;
+
 @layer base {
   [data-theme='light'] {
     --radius: 0.5rem;
     --border: 20 5.9% 90%;
+    --sidebar: 240 4.8% 95.9%;
   }
 
   [data-theme='dark'] {
     --radius: 0.5rem;
     --border: 0 0% 22.1%;
+    --sidebar: 220 8.1% 14.5%;
   }
 }

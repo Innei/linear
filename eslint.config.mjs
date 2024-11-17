@@ -7,12 +7,7 @@ export default defineConfig(
   {
     formatting: false,
     lessOpinionated: true,
-    ignores: [
-      'src/renderer/src/hono.ts',
-      'src/hono.ts',
-      'packages/shared/src/hono.ts',
-      'resources/**',
-    ],
+    ignores: ['dist/**'],
     preferESM: false,
   },
   {
@@ -28,6 +23,7 @@ export default defineConfig(
       // NOTE: Disable this temporarily
       'react-compiler/react-compiler': 0,
       'no-restricted-syntax': 0,
+      'package-json/valid-name': 0,
       'no-restricted-globals': [
         'error',
         {
@@ -52,6 +48,12 @@ export default defineConfig(
     },
     rules: {
       'recursive-sort/recursive-sort': 'error',
+    },
+  },
+  {
+    files: ['package.json'],
+    rules: {
+      'package-json/valid-name': 0,
     },
   },
 )

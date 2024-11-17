@@ -9,6 +9,11 @@ declare global {
 
   export const APP_DEV_CWD: string
   export const APP_NAME: string
+
+  /**
+   * This function is a macro, will replace in the build stage.
+   */
+  export function tw(strings: TemplateStringsArray, ...values: any[]): string
 }
 
 declare interface ImportMetaEnv {

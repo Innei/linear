@@ -1,4 +1,6 @@
 import reactRefresh from '@vitejs/plugin-react'
+import { RemoveWrapperFunction } from 'unplugin-ast/transformers'
+import AST from 'unplugin-ast/vite'
 import { defineConfig } from 'vite'
 import { checker } from 'vite-plugin-checker'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -13,6 +15,9 @@ export default defineConfig({
     checker({
       typescript: true,
       enableBuild: true,
+    }),
+    AST({
+      transformer: [RemoveWrapperFunction(['tw', 'defineSettingPageData'])],
     }),
   ],
   server: {

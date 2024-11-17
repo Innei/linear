@@ -9,3 +9,7 @@ export const useSortedNotifications = () => {
 
   return notifications
 }
+
+export const useIsSyncingNotifications = () => {
+  return useNotificationStore((state) => state.syncingAll || state.syncingDelta)
+}

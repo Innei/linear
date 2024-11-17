@@ -6,13 +6,13 @@ import { NotificationRequests } from '~/store/notification/store'
 export const Component = () => {
   useQuery({
     queryKey: ['repos'],
-    queryFn: () => NotificationRequests.fetchDelta(),
+    queryFn: () => NotificationRequests.fetch(),
   })
 
   const notifications = useSortedNotifications()
 
   return (
-    <div className="rounded-lg border p-4">
+    <div className="h-screen grow overflow-auto rounded-lg border p-4">
       {notifications.map((n) => (
         <div key={n.id}>
           {n.subject.title} {n.updated_at} {n.repositoryId}

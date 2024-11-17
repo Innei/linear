@@ -1,4 +1,4 @@
-import { get, omit } from 'lodash-es'
+import { omit } from 'es-toolkit'
 import { Fragment } from 'react/jsx-runtime'
 import type { RouteObject } from 'react-router-dom'
 
@@ -128,7 +128,7 @@ export function buildGlobRoutes(
         dtsRoutes(
           parentKey,
           childrenChildren,
-          omit(paths, 'layout'),
+          omit(paths, ['layout']),
           parentPath,
         )
         children.push({
@@ -201,4 +201,24 @@ const normalizePathKey = (key: string) => {
     return `:${key.slice(1, -1)}`
   }
   return key
+}
+
+function get(obj: any, path: string): any {
+  // Handle direct property access first
+  if (path in obj) {
+    return obj[path]
+  }
+
+  // Split the path into parts
+  const parts = path.split('/')
+  let current = obj
+
+  for (const part of parts) {
+    if (current == null) {
+      return undefined
+    }
+    current = current[part]
+  }
+
+  return current
 }

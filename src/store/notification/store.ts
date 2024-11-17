@@ -1,20 +1,27 @@
 import type { DB_Notification } from '~/database/schemas'
 import { MetaKey, MetaService } from '~/database/services/meta'
 import { NotificationService } from '~/database/services/notification'
+import { appLog } from '~/lib/log'
 import { octokit } from '~/lib/octokit'
 
 import { createZustandStore } from '../utils/helper'
 
 interface NotificationStoreState {
   notifications: Record<string, DB_Notification>
+
+  syncingAll: boolean
+  syncingDelta: boolean
 }
 export const useNotificationStore = createZustandStore<NotificationStoreState>(
   'notification',
 )(() => ({
   notifications: {},
+  syncingAll: false,
+  syncingDelta: false,
 }))
 
-const get = useNotificationStore.getState
+const LOOP_FETCH_MAX_PAGE = 100
+
 const set = useNotificationStore.setState
 
 class NotificationStoreActionsStatic {
@@ -32,34 +39,21 @@ class NotificationStoreActionsStatic {
 
 export const NotificationStoreActions = new NotificationStoreActionsStatic()
 class NotificationRequestsStatic {
-  async fetchDelta() {
-    const lastModified = await MetaService.get(MetaKey.LastModified)
-    if (!lastModified) {
-      return this.fetchAll()
+  async fetch() {
+    const since = await MetaService.get(MetaKey.LastModified)
+    if (since) {
+      return this.fetchDelta(since)
     }
-
-    const notifications =
-      await octokit.rest.activity.listNotificationsForAuthenticatedUser({
-        since: lastModified,
-      })
-
-    const data = await NotificationService.upsertMany(notifications.data)
-    NotificationStoreActions.upsertMany(data)
-    {
-      const lastModified = notifications.headers['last-modified']
-      if (lastModified) {
-        MetaService.set(MetaKey.LastModified, lastModified)
-      }
-    }
-    return data
+    return this.fetchAll()
   }
 
-  async fetchAll() {
-    const notifications =
-      await octokit.rest.activity.listNotificationsForAuthenticatedUser({
-        all: true,
-      })
-
+  private async _processNotifications(
+    notifications: Awaited<
+      ReturnType<
+        typeof octokit.rest.activity.listNotificationsForAuthenticatedUser
+      >
+    >,
+  ) {
     const data = await NotificationService.upsertMany(notifications.data)
     NotificationStoreActions.upsertMany(data)
 
@@ -71,7 +65,65 @@ class NotificationRequestsStatic {
       )
     }
 
-    return notifications
+    return { data, notifications }
+  }
+
+  private async fetchDelta(since: string) {
+    const notifications =
+      await octokit.rest.activity.listNotificationsForAuthenticatedUser({
+        since,
+      })
+
+    const { data } = await this._processNotifications(notifications)
+
+    if (notifications.data.length > 0) {
+      set((state) => ({ ...state, syncingDelta: true }))
+      this.asyncLoopfetch({ since }).finally(() => {
+        set((state) => ({ ...state, syncingDelta: false }))
+      })
+    }
+    return data
+  }
+
+  private async fetchAll() {
+    const notifications =
+      await octokit.rest.activity.listNotificationsForAuthenticatedUser({
+        all: true,
+      })
+
+    const { notifications: result } =
+      await this._processNotifications(notifications)
+
+    if (result.data.length > 0) {
+      set((state) => ({ ...state, syncingAll: true }))
+      this.asyncLoopfetch({ all: true }).finally(() => {
+        set((state) => ({ ...state, syncingAll: false }))
+      })
+    }
+    return result
+  }
+
+  private async asyncLoopfetch(
+    params: Parameters<
+      typeof octokit.rest.activity.listNotificationsForAuthenticatedUser
+    >[0],
+  ) {
+    let page = 2
+    let hasMore = true
+
+    while (hasMore && page < LOOP_FETCH_MAX_PAGE) {
+      appLog(`Fetching page ${page}...`)
+      const notifications =
+        await octokit.rest.activity.listNotificationsForAuthenticatedUser({
+          ...params,
+          page,
+        })
+
+      const data = await NotificationService.upsertMany(notifications.data)
+      NotificationStoreActions.upsertMany(data)
+      hasMore = notifications.data.length > 0
+      page++
+    }
   }
 }
 

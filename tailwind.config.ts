@@ -8,7 +8,7 @@ import defaultTheme from 'tailwindcss/defaultTheme'
 require('./plugins/css-plugin')
 
 const twConfig: Config = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './index.html'],
   darkMode: ['class', '[data-theme="dark"]'],
   safelist: [],
   theme: {
@@ -34,6 +34,7 @@ const twConfig: Config = {
 
       colors: {
         border: 'hsl(var(--border) / <alpha-value>)',
+        sidebar: 'hsl(var(--sidebar) / <alpha-value>)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -76,9 +77,9 @@ const twConfig: Config = {
       {
         light: {
           'color-scheme': 'light',
-          primary: '#33A6B8',
+          primary: '#090909',
           secondary: '#A8D8B9',
-          accent: '#33A6B8',
+          accent: '#090909',
           'accent-content': '#fafafa',
           neutral: '#C7C7CC',
           'base-100': '#fff',
@@ -95,9 +96,9 @@ const twConfig: Config = {
       {
         dark: {
           'color-scheme': 'dark',
-          primary: '#F596AA',
+          primary: '#090909',
           secondary: '#FB966E',
-          accent: '#F596AA',
+          accent: '#090909',
           neutral: '#48484A',
           'base-100': '#1C1C1E',
           'base-content': '#FFF',
