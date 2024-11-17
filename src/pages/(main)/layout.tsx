@@ -18,6 +18,7 @@ import {
   useSidebarColumnShow,
   useSidebarColumnTempShow,
 } from '~/atoms/sidebar'
+import { Sidebar } from '~/components/layout/sidebar'
 import { PanelSplitter } from '~/components/ui/divider'
 import { Kbd } from '~/components/ui/kbd/Kbd'
 import { clsxm } from '~/lib/cn'
@@ -28,11 +29,7 @@ export const Component = () => {
   return (
     <RootContainer>
       <SidebarResponsiveResizerContainer containerRef={containerRef}>
-        <div
-          className={clsxm('relative flex h-full flex-col space-y-3 pt-2.5')}
-        >
-          1
-        </div>
+        <Sidebar />
       </SidebarResponsiveResizerContainer>
       <Outlet />
     </RootContainer>

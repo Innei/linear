@@ -18,6 +18,7 @@ export default defineConfig(
     },
     rules: {
       'unicorn/prefer-math-trunc': 'off',
+      'unicorn/expiring-todo-comments': 0,
       '@eslint-react/no-clone-element': 0,
       '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 0,
       // NOTE: Disable this temporarily
