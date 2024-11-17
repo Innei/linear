@@ -21,6 +21,7 @@ export const useNotificationStore = createZustandStore<NotificationStoreState>(
 }))
 
 const LOOP_FETCH_MAX_PAGE = 100
+const PRE_PAGE_SIZE = 50
 
 const set = useNotificationStore.setState
 
@@ -72,11 +73,12 @@ class NotificationRequestsStatic {
     const notifications =
       await octokit.rest.activity.listNotificationsForAuthenticatedUser({
         since,
+        per_page: PRE_PAGE_SIZE,
       })
 
     const { data } = await this._processNotifications(notifications)
 
-    if (notifications.data.length > 0) {
+    if (notifications.data.length >= PRE_PAGE_SIZE) {
       set((state) => ({ ...state, syncingDelta: true }))
       this.asyncLoopfetch({ since }).finally(() => {
         set((state) => ({ ...state, syncingDelta: false }))
@@ -89,12 +91,13 @@ class NotificationRequestsStatic {
     const notifications =
       await octokit.rest.activity.listNotificationsForAuthenticatedUser({
         all: true,
+        per_page: PRE_PAGE_SIZE,
       })
 
     const { notifications: result } =
       await this._processNotifications(notifications)
 
-    if (result.data.length > 0) {
+    if (result.data.length >= PRE_PAGE_SIZE) {
       set((state) => ({ ...state, syncingAll: true }))
       this.asyncLoopfetch({ all: true }).finally(() => {
         set((state) => ({ ...state, syncingAll: false }))
@@ -117,11 +120,12 @@ class NotificationRequestsStatic {
         await octokit.rest.activity.listNotificationsForAuthenticatedUser({
           ...params,
           page,
+          per_page: PRE_PAGE_SIZE,
         })
 
       const data = await NotificationService.upsertMany(notifications.data)
       NotificationStoreActions.upsertMany(data)
-      hasMore = notifications.data.length > 0
+      hasMore = notifications.data.length >= PRE_PAGE_SIZE
       page++
     }
   }
