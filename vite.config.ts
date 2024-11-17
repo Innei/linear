@@ -15,6 +15,9 @@ export default defineConfig({
       enableBuild: true,
     }),
   ],
+  server: {
+    port: 7123,
+  },
   define: {
     APP_DEV_CWD: JSON.stringify(process.cwd()),
     APP_NAME: JSON.stringify(PKG.name),

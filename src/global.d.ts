@@ -11,4 +11,7 @@ declare global {
   export const APP_NAME: string
 }
 
+declare interface ImportMetaEnv {
+  VITE_GH_TOKEN: string
+}
 export {}

@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 import { FetchError } from 'ofetch'
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       gcTime: Infinity,
@@ -18,5 +18,3 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-export { queryClient }
