@@ -1,5 +1,7 @@
 import type { components } from '@octokit/openapi-types'
 
+import { RepoStoreActions } from '~/store/repo/store'
+
 import { browserDB } from '../db'
 import type { DB_Repo } from '../schemas'
 import type { Hydratable } from './base'
@@ -11,7 +13,8 @@ class RepoServiceStatic extends BaseService<DB_Repo> implements Hydratable {
   }
 
   async hydrate(): Promise<void> {
-    // const repos = await getRepos()
+    const repos = await this.table.toArray()
+    RepoStoreActions.upsertMany(repos)
   }
 
   async upsert(

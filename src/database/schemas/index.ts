@@ -9,3 +9,8 @@ export type DB_Notification = Omit<
 > & {
   repositoryId: DB_Repo['id']
 }
+
+export type DB_Meta = {
+  name: string
+  value: any
+}

@@ -1,5 +1,7 @@
 import type { components } from '@octokit/openapi-types'
 
+import { NotificationStoreActions } from '~/store/notification/store'
+
 import type { BrowserDBTable } from '../db'
 import { browserDB } from '../db'
 import type { DB_Notification } from '../schemas'
@@ -14,7 +16,8 @@ class NotificationServiceStatic implements Hydratable {
   }
 
   async hydrate(): Promise<void> {
-    // const notifications = await getNotifications()
+    const notifications = await this.table.toArray()
+    NotificationStoreActions.upsertMany(notifications)
   }
 
   async upsertMany(data: components['schemas']['thread'][]) {

@@ -1,6 +1,9 @@
 import type { FC } from 'react'
+import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 
+import { useAppIsReady } from './atoms/app'
+import { appLog } from './lib/log'
 import { RootProviders } from './providers/root-providers'
 
 export const App: FC = () => {
@@ -10,9 +13,16 @@ export const App: FC = () => {
     </RootProviders>
   )
 }
-
 const AppLayer = () => {
-  const appIsReady = true
+  const appIsReady = useAppIsReady()
+
+  useEffect(() => {
+    // removeAppSkeleton()
+    const doneTime = Math.trunc(performance.now())
+    appLog('App is ready', `${doneTime}ms`)
+    // applyAfterReadyCallbacks()
+  }, [appIsReady])
+
   return appIsReady ? <Outlet /> : <AppSkeleton />
 }
 
