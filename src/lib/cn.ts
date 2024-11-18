@@ -1,16 +1,12 @@
 // Tremor Raw cx [v0.0.0]
 
-import type { ClassValue } from 'clsx'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 export const clsxm = (...args: any[]) => {
   return twMerge(clsx(args))
 }
-
-export function cx(...args: ClassValue[]) {
-  return twMerge(clsx(...args))
-}
+export { clsxm as cn, clsxm as cx }
 
 // Tremor Raw focusInput [v0.0.1]
 

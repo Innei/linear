@@ -19,10 +19,13 @@
     "@headlessui/react": "2.2.0",
     "@octokit/core": "6.1.2",
     "@radix-ui/react-slot": "1.1.0",
+    "@radix-ui/react-tabs": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.4",
     "@remixicon/react": "4.5.0",
     "@tanstack/react-query": "5.60.5",
+    "@tanstack/react-virtual": "3.10.9",
     "clsx": "2.1.1",
+    "date-fns": "4.1.0",
     "dexie": "4.0.10",
     "es-toolkit": "1.27.0",
     "framer-motion": "11.11.17",
@@ -39,6 +42,7 @@
     "tailwind-merge": "2.5.4",
     "use-sync-external-store": "1.2.2",
     "usehooks-ts": "3.1.0",
+    "vaul": "1.1.1",
     "zustand": "5.0.1"
   },
   "devDependencies": {
@@ -73,6 +77,11 @@
     "vite-plugin-checker": "0.8.0",
     "vite-tsconfig-paths": "5.1.2",
     "vitest": "2.1.5"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@tanstack/react-virtual@3.10.9": "patches/@tanstack__react-virtual@3.10.9.patch"
+    }
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged"

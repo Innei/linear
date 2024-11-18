@@ -1,3 +1,4 @@
+import { selectNotificationLength } from './selectors'
 import { useNotificationStore } from './store'
 
 export const useSortedNotifications = () => {
@@ -12,4 +13,12 @@ export const useSortedNotifications = () => {
 
 export const useIsSyncingNotifications = () => {
   return useNotificationStore((state) => state.syncingAll || state.syncingDelta)
+}
+
+export const useNotification = (id: string) => {
+  return useNotificationStore((state) => state.notifications[id])
+}
+
+export const useNotificationLength = () => {
+  return useNotificationStore(selectNotificationLength)
 }

@@ -1,7 +1,6 @@
 import { isDraft, original, produce } from 'immer'
 import type { StateCreator, StoreApi, UseBoundStore } from 'zustand'
 import type { PersistStorage } from 'zustand/middleware'
-import { devtools } from 'zustand/middleware'
 import { shallow } from 'zustand/shallow'
 import type { UseBoundStoreWithEqualityFn } from 'zustand/traditional'
 import { createWithEqualityFn } from 'zustand/traditional'
@@ -170,4 +169,12 @@ export const createTransaction = <S, Ctx>(
   ctx?: Ctx,
 ): Transaction<S, Ctx> => {
   return new Transaction(snapshot, ctx)
+}
+
+export const createSelectorHelper = <TState>() => {
+  return function defineSelector<TSelected>(
+    selector: (state: TState) => TSelected,
+  ) {
+    return selector
+  }
 }

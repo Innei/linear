@@ -6,7 +6,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 export const Sidebar = () => {
   const isSyncingNotifications = useIsSyncingNotifications()
   return (
-    <div className={clsxm('relative flex h-full flex-col space-y-3 pt-2.5')}>
+    <div
+      className={clsxm(
+        'relative flex h-full flex-col space-y-3 pt-2.5 border-r',
+      )}
+    >
       {isSyncingNotifications ? (
         <Tooltip>
           <TooltipTrigger asChild>

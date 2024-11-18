@@ -18,6 +18,6 @@ const $container = document.querySelector('#root') as HTMLElement
 createRoot($container).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    <ClickToComponent />
+    <ClickToComponent editor={'cursor'} />
   </React.StrictMode>,
 )

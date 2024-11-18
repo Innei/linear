@@ -11,5 +11,28 @@
     --radius: 0.5rem;
     --border: 0 0% 22.1%;
     --sidebar: 220 8.1% 14.5%;
+
+    --header-tab-link-bg: lch(14.471% 8.568 282.863 / 1);
+    --muted: 220 8.1% 14.5%;
+
+    --tertiary: lch(63.788 4.284 282.863);
   }
+}
+
+html,
+#shadow-html {
+  --pointer: default;
+
+  --cursor-button: var(--pointer);
+  --cursor-select: var(--pointer);
+  --cursor-checkbox: var(--pointer);
+  --cursor-link: var(--pointer);
+  --cursor-menu: default;
+  --cursor-radio: var(--pointer);
+  --cursor-switch: var(--pointer);
+  --cursor-card: var(--pointer);
+}
+
+button {
+  cursor: var(--cursor-button);
 }

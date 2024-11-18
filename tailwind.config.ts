@@ -35,6 +35,8 @@ const twConfig: Config = {
       colors: {
         border: 'hsl(var(--border) / <alpha-value>)',
         sidebar: 'hsl(var(--sidebar) / <alpha-value>)',
+        muted: 'hsl(var(--muted) / <alpha-value>)',
+        tertiary: 'var(--tertiary)',
       },
       borderRadius: {
         lg: 'var(--radius)',

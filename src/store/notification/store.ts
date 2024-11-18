@@ -12,6 +12,7 @@ interface NotificationStoreState {
   syncingAll: boolean
   syncingDelta: boolean
 }
+
 export const useNotificationStore = createZustandStore<NotificationStoreState>(
   'notification',
 )(() => ({

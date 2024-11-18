@@ -2,8 +2,8 @@
 
 import { Slot } from '@radix-ui/react-slot'
 import { RiLoader2Fill } from '@remixicon/react'
-import { m, motion } from 'framer-motion'
-import React from 'react'
+import { m } from 'framer-motion'
+import * as React from 'react'
 import type { VariantProps } from 'tailwind-variants'
 import { tv } from 'tailwind-variants'
 
