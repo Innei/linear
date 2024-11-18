@@ -74,6 +74,7 @@ class NotificationRequestsStatic {
       await octokit.rest.activity.listNotificationsForAuthenticatedUser({
         since,
         per_page: PRE_PAGE_SIZE,
+        all: true,
       })
 
     const { data } = await this._processNotifications(notifications)

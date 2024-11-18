@@ -1,9 +1,9 @@
 import { queryClient } from '~/lib/query-client'
+import { sleep } from '~/lib/utils'
 import { NotificationRequests } from '~/store/notification/store'
 
-export const pollingNotifications = () => {
-  const timeout = 1000 * 60 * 5 // 5 minutes
-
+const timeout = 1000 * 60 * 5 // 5 minutes
+export const pollingNotifications = async () => {
   const job = () => {
     // TODO check token
     return queryClient.prefetchQuery({
@@ -12,9 +12,10 @@ export const pollingNotifications = () => {
     })
   }
 
-  setTimeout(async () => {
-    await job().finally(() => {
-      pollingNotifications()
+  while (true) {
+    await job().catch((err) => {
+      console.error('Fetching notifications failed', err)
     })
-  }, timeout)
+    await sleep(timeout)
+  }
 }
