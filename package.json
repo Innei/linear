@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@headlessui/react": "2.2.0",
+    "@million/lint": "1.0.12",
     "@octokit/core": "6.1.2",
     "@radix-ui/react-slot": "1.1.0",
     "@radix-ui/react-tabs": "1.1.1",
