@@ -20,6 +20,13 @@ class NotificationServiceStatic implements Hydratable {
     NotificationStoreActions.upsertMany(notifications)
   }
 
+  async markRead(id: string) {
+    await this.table.update(id, {
+      unread: false,
+      last_read_at: new Date().toISOString(),
+    })
+  }
+
   async upsertMany(data: components['schemas']['thread'][]) {
     const insertedData: DB_Notification[] = data.map(
       ({ repository, ...n }) => ({

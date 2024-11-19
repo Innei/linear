@@ -9,3 +9,12 @@ export const [, , useAppIsReady, , appIsReady, setAppIsReady] = createAtomHooks(
 export const [, , useAppSearchOpen, , , setAppSearchOpen] = createAtomHooks(
   atom(false),
 )
+
+export const [
+  ,
+  ,
+  useAppPollingInterval,
+  ,
+  getAppPollingInterval,
+  setAppPollingInterval,
+] = createAtomHooks(atom(60 * 1000))

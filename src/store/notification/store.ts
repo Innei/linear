@@ -1,16 +1,22 @@
+import { produce } from 'immer'
+
+import { setAppPollingInterval } from '~/atoms/app'
 import type { DB_Notification } from '~/database/schemas'
 import { MetaKey, MetaService } from '~/database/services/meta'
 import { NotificationService } from '~/database/services/notification'
 import { appLog } from '~/lib/log'
 import { octokit } from '~/lib/octokit'
 
-import { createZustandStore } from '../utils/helper'
+import { createTransaction, createZustandStore } from '../utils/helper'
 
 interface NotificationStoreState {
   notifications: Record<string, DB_Notification>
 
   syncingAll: boolean
   syncingDelta: boolean
+
+  syncAt: Nullable<Date>
+  lastModified: Nullable<Date>
 }
 
 export const useNotificationStore = createZustandStore<NotificationStoreState>(
@@ -19,11 +25,14 @@ export const useNotificationStore = createZustandStore<NotificationStoreState>(
   notifications: {},
   syncingAll: false,
   syncingDelta: false,
+  syncAt: null,
+  lastModified: null,
 }))
 
 const LOOP_FETCH_MAX_PAGE = 100
 const PRE_PAGE_SIZE = 50
 
+const get = useNotificationStore.getState
 const set = useNotificationStore.setState
 
 class NotificationStoreActionsStatic {
@@ -36,6 +45,45 @@ class NotificationStoreActionsStatic {
 
       return { ...state, notifications: map }
     })
+  }
+
+  async markAsRead(id: string) {
+    const snapshot = get().notifications[id]
+    if (!snapshot) return
+
+    const tx = createTransaction(snapshot)
+    tx.optimistic(() => {
+      const nextState = produce(get(), (draft) => {
+        const n = draft.notifications[id]
+        if (n) {
+          n.last_read_at = new Date().toISOString()
+          n.unread = false
+        }
+      })
+      set(nextState)
+    })
+    tx.execute(async () => {
+      await octokit.rest.activity.markThreadAsRead({
+        thread_id: +snapshot.id,
+      })
+    })
+
+    tx.persist(() => {
+      return NotificationService.markRead(id)
+    })
+
+    tx.rollback((snapshot) => {
+      set((state) => {
+        const map = { ...state.notifications }
+        map[id] = snapshot
+        return { ...state, notifications: map }
+      })
+    })
+    await tx.run()
+  }
+
+  async markAllAsRead() {
+    //  TODO
   }
 }
 
@@ -60,11 +108,20 @@ class NotificationRequestsStatic {
     NotificationStoreActions.upsertMany(data)
 
     const lastModified = notifications.headers['last-modified']
+    const pollingInterval = notifications.headers['x-poll-interval']
+    if (pollingInterval) {
+      setAppPollingInterval(Number(pollingInterval) * 1000)
+    }
+
     if (lastModified) {
-      MetaService.set(
-        MetaKey.LastModified,
-        new Date(lastModified).toISOString(),
-      )
+      const date = new Date(lastModified)
+      MetaService.set(MetaKey.LastModified, date.toISOString())
+
+      set((state) => ({
+        ...state,
+        lastModified: date,
+        syncAt: new Date(),
+      }))
     }
 
     return { data, notifications }

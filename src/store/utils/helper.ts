@@ -100,35 +100,39 @@ export const toRaw = <T>(draft: MayBeDraft<T>): T => {
   return isDraft(draft) ? original(draft)! : draft
 }
 
+// 添加新的类型定义
+type SyncOrAsync<T> = T | Promise<T>
+type ExecutorFn<S, Ctx> = (snapshot: S, ctx: Ctx) => SyncOrAsync<void>
+
 class Transaction<S, Ctx> {
   private _snapshot: S
   private _ctx: Ctx
-  private onRollback?: (snapshot: S, ctx: Ctx) => Promise<void>
-  private executorFn?: (snapshot: S, ctx: Ctx) => Promise<void>
-  private optimisticExecutor?: (snapshot: S, ctx: Ctx) => Promise<void>
-  private onPersist?: (snapshot: S, ctx: Ctx) => Promise<void>
+  private onRollback?: ExecutorFn<S, Ctx>
+  private executorFn?: ExecutorFn<S, Ctx>
+  private optimisticExecutor?: ExecutorFn<S, Ctx>
+  private onPersist?: ExecutorFn<S, Ctx>
 
   constructor(snapshot?: S, ctx?: Ctx) {
     this._snapshot = snapshot || ({} as S)
     this._ctx = ctx || ({} as Ctx)
   }
 
-  rollback(fn: (snapshot: S, ctx: Ctx) => Promise<void>): this {
+  rollback(fn: ExecutorFn<S, Ctx>): this {
     this.onRollback = fn
     return this
   }
 
-  execute(executor: (snapshot: S, ctx: Ctx) => Promise<void>): this {
+  execute(executor: ExecutorFn<S, Ctx>): this {
     this.executorFn = executor
     return this
   }
 
-  optimistic(executor: (snapshot: S, ctx: Ctx) => Promise<void>): this {
+  optimistic(executor: ExecutorFn<S, Ctx>): this {
     this.optimisticExecutor = executor
     return this
   }
 
-  persist(fn: (snapshot: S, ctx: Ctx) => Promise<void>): this {
+  persist(fn: ExecutorFn<S, Ctx>): this {
     this.onPersist = fn
     return this
   }
@@ -138,7 +142,9 @@ class Transaction<S, Ctx> {
 
     if (this.optimisticExecutor) {
       try {
-        await this.optimisticExecutor(this._snapshot, this._ctx)
+        await Promise.resolve(
+          this.optimisticExecutor(this._snapshot, this._ctx),
+        )
       } catch (error) {
         isOptimisticFailed = true
         console.error(error)
@@ -147,10 +153,10 @@ class Transaction<S, Ctx> {
 
     if (this.executorFn) {
       try {
-        await this.executorFn(this._snapshot, this._ctx)
+        await Promise.resolve(this.executorFn(this._snapshot, this._ctx))
       } catch (err) {
         if (this.onRollback && !isOptimisticFailed) {
-          await this.onRollback(this._snapshot, this._ctx)
+          await Promise.resolve(this.onRollback(this._snapshot, this._ctx))
         }
         throw err
       }
@@ -158,7 +164,7 @@ class Transaction<S, Ctx> {
 
     if (this.onPersist) {
       await runTransactionInScope(() =>
-        this.onPersist!(this._snapshot, this._ctx),
+        Promise.resolve(this.onPersist!(this._snapshot, this._ctx)),
       )
     }
   }

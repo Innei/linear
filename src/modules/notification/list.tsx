@@ -1,13 +1,24 @@
+import * as Avatar from '@radix-ui/react-avatar'
+import { TooltipPortal } from '@radix-ui/react-tooltip'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { memo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 
 import { RelativeTime } from '~/components/ui/datetime'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '~/components/ui/tooltip'
+import { cn } from '~/lib/cn'
+import { resolveHtmlUrl } from '~/lib/gh'
 import {
   useNotification,
   useSortedNotifications,
 } from '~/store/notification/hooks'
+import { NotificationStoreActions } from '~/store/notification/store'
+import { useRepo } from '~/store/repo/hooks'
 
-export const NotificationList = () => {
+export const NotificationList = memo(() => {
   const notifications = useSortedNotifications()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
 
@@ -41,29 +52,119 @@ export const NotificationList = () => {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <NotificationItem id={notifications[virtualItem.index].id} />
+              <NotificationItem
+                id={notifications[virtualItem.index].id}
+                prevId={notifications[virtualItem.index - 1]?.id || undefined}
+              />
             </div>
           )
         })}
       </div>
     </div>
   )
-}
-const NotificationItem = memo((props: { id: string }) => {
+})
+const NotificationItem = memo((props: { id: string; prevId?: string }) => {
   const notification = useNotification(props.id)
+  const prevNotificationRepoId = useNotification(
+    props.prevId || '',
+    (n) => n?.repositoryId,
+  )
+  const prevRepo = useRepo(prevNotificationRepoId || 0)
+  const repo = useRepo(notification.repositoryId)
+  const prevRepoEqual = prevRepo?.id === repo?.id
+
+  // TODO CI activity url ????
+  const [remoteFetchedUrl, _setRemoteFetchedUrl] = useState<string | null>(null)
+  const resolvedUrl = useMemo(() => {
+    return (
+      remoteFetchedUrl ||
+      resolveHtmlUrl(
+        notification.subject.type,
+        repo?.html_url,
+        notification.subject.url,
+      ) ||
+      notification.subject.url
+    )
+  }, [
+    notification.subject.type,
+    notification.subject.url,
+    remoteFetchedUrl,
+    repo?.html_url,
+  ])
+
+  const { unread } = notification
+
   if (!notification) return null
+
   return (
     <a
-      href={notification.subject.url}
+      data-id={notification.id}
+      href={resolvedUrl}
       onClick={(e) => {
         e.preventDefault()
+
+        NotificationStoreActions.markAsRead(notification.id)
       }}
       onDoubleClick={() => {
-        window.open(notification.subject.url, '_blank')
+        if (resolvedUrl) {
+          window.open(resolvedUrl, '_blank')
+        }
       }}
-      className="flex cursor-link items-center justify-between px-4 py-2 hover:bg-muted"
+      className={
+        'flex cursor-link items-center justify-between px-4 py-2 hover:bg-muted'
+      }
     >
-      <div>{notification.subject.title}</div>
+      <div className="flex items-center gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Avatar.Root className="size-6">
+              <Avatar.Image
+                className="size-6 rounded-full"
+                src={repo?.owner.avatar_url}
+              />
+              <Avatar.Fallback
+                delayMs={100}
+                className="center inline-flex size-6 rounded-full border text-xs text-base-content/50"
+              >
+                {repo?.owner.login.slice(0, 2)}
+              </Avatar.Fallback>
+            </Avatar.Root>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              {repo?.owner.login}/{repo?.name}
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+        <div>
+          {!prevRepoEqual && repo && (
+            <a
+              href={repo.html_url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => {
+                e.preventDefault()
+                window.open(repo.html_url, '_blank')
+              }}
+              className="text-xs font-medium text-base-content/60"
+            >
+              {repo.owner.login}/{repo.name}
+            </a>
+          )}
+          <div
+            className={cn(
+              "before:mr-1.5 before:inline-block before:size-2 before:translate-y-[-2px] before:rounded-full before:bg-accent before:duration-200 before:content-['']",
+              !unread && 'before:-mr-2 before:scale-0',
+            )}
+          >
+            {notification.subject.title}
+          </div>
+          {/* <RemoteFetchUrl
+            setRemoteFetchedUrl={setRemoteFetchedUrl}
+            type={notification.subject.type}
+          /> */}
+        </div>
+      </div>
 
       <div className="text-xs tabular-nums text-tertiary">
         <RelativeTime

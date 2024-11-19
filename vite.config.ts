@@ -1,4 +1,3 @@
-import MillionLint from '@million/lint'
 import reactRefresh from '@vitejs/plugin-react'
 import { RemoveWrapperFunction } from 'unplugin-ast/transformers'
 import AST from 'unplugin-ast/vite'
@@ -13,7 +12,7 @@ export default defineConfig({
   plugins: [
     reactRefresh(),
     tsconfigPaths(),
-    MillionLint.vite(),
+    // MillionLint.vite({}),
     checker({
       typescript: true,
       enableBuild: true,

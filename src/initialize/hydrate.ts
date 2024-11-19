@@ -1,4 +1,5 @@
 import type { Hydratable } from '~/database/services/base'
+import { MetaService } from '~/database/services/meta'
 import { NotificationService } from '~/database/services/notification'
 import { RepoService } from '~/database/services/repo'
 import { appLog } from '~/lib/log'
@@ -17,7 +18,11 @@ export const hydrateDatabaseToStore = async () => {
   async function hydrate() {
     const now = Date.now()
 
-    const hydrates: Hydratable[] = [NotificationService, RepoService]
+    const hydrates: Hydratable[] = [
+      NotificationService,
+      RepoService,
+      MetaService,
+    ]
     await Promise.all(hydrates.map((h) => h.hydrate()))
 
     window.__dbIsReady = true

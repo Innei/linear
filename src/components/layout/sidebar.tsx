@@ -1,16 +1,24 @@
-import { clsxm } from '~/lib/cn'
-import { useIsSyncingNotifications } from '~/store/notification/hooks'
+import { formatDate } from 'date-fns'
 
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import {
+  useIsSyncingNotifications,
+  useNotificationSyncAt,
+  useNotificationUpdatedAt,
+} from '~/store/notification/hooks'
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from '../ui/tooltip'
 
 export const Sidebar = () => {
   const isSyncingNotifications = useIsSyncingNotifications()
+  const syncAt = useNotificationSyncAt()
+  const updatedAt = useNotificationUpdatedAt()
   return (
-    <div
-      className={clsxm(
-        'relative flex h-full flex-col space-y-3 pt-2.5 border-r',
-      )}
-    >
+    <div className={'flex relative h-full flex-col space-y-3 border-r pt-2.5'}>
       {isSyncingNotifications ? (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -20,7 +28,25 @@ export const Sidebar = () => {
           </TooltipTrigger>
           <TooltipContent>Syncing notifications...</TooltipContent>
         </Tooltip>
-      ) : null}
+      ) : (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="center flex absolute bottom-2 right-2 size-6 cursor-auto select-none rounded-full border text-xs text-base-content/50">
+              <i className="i-mingcute-time-duration-line" />
+            </div>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              {syncAt && (
+                <p>Last synced at {formatDate(syncAt, 'MMM d, yyyy h:mm a')}</p>
+              )}
+              {updatedAt && (
+                <p>Updated at {formatDate(updatedAt, 'MMM d, yyyy h:mm a')}</p>
+              )}
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      )}
     </div>
   )
 }

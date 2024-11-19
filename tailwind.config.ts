@@ -79,9 +79,9 @@ const twConfig: Config = {
       {
         light: {
           'color-scheme': 'light',
-          primary: '#608BC1',
+          primary: '#0969da',
           secondary: '#CBDCEB',
-          accent: '#608BC1',
+          accent: '#0969da',
           'accent-content': '#fafafa',
           neutral: '#C7C7CC',
           'base-100': '#fff',
@@ -98,9 +98,9 @@ const twConfig: Config = {
       {
         dark: {
           'color-scheme': 'dark',
-          primary: '#133E87',
+          primary: '#316dca',
           secondary: '#608BC1',
-          accent: '#133E87',
+          accent: '#316dca',
           neutral: '#48484A',
           'base-100': '#1C1C1E',
           'base-content': '#FFF',

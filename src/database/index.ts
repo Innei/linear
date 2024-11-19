@@ -1,9 +1,9 @@
-import { browserDB } from "./db"
+import { browserDB } from './db'
 
-export * from "./db"
-export * from "./schemas"
+export * from './db'
+export * from './schemas'
 
-export const DB_NOT_READY_OR_DISABLED = "Database is not ready or disabled"
+export const DB_NOT_READY_OR_DISABLED = 'Database is not ready or disabled'
 /**
  * @description Check if database is ready
  * If users disabled data persist, it's always false, that means you can't do operation with database.

@@ -1,3 +1,5 @@
+import type { DB_Notification } from '~/database'
+
 import { selectNotificationLength } from './selectors'
 import { useNotificationStore } from './store'
 
@@ -15,10 +17,28 @@ export const useIsSyncingNotifications = () => {
   return useNotificationStore((state) => state.syncingAll || state.syncingDelta)
 }
 
-export const useNotification = (id: string) => {
-  return useNotificationStore((state) => state.notifications[id])
+export function useNotification(id: string): DB_Notification
+export function useNotification<T>(
+  id: string,
+  selector?: (notification?: DB_Notification) => T,
+): T
+export function useNotification<T>(
+  id: string,
+  selector?: (notification?: DB_Notification) => T,
+) {
+  return useNotificationStore(
+    (state) => selector?.(state.notifications[id]) ?? state.notifications[id],
+  )
 }
 
 export const useNotificationLength = () => {
   return useNotificationStore(selectNotificationLength)
+}
+
+export const useNotificationSyncAt = () => {
+  return useNotificationStore((state) => state.syncAt)
+}
+
+export const useNotificationUpdatedAt = () => {
+  return useNotificationStore((state) => state.lastModified)
 }
