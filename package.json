@@ -32,7 +32,7 @@
     "es-toolkit": "1.27.0",
     "framer-motion": "11.11.17",
     "immer": "10.1.1",
-    "jotai": "2.10.2",
+    "jotai": "2.10.3",
     "octokit": "4.0.2",
     "ofetch": "1.4.1",
     "react": "18.3.1",
