@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react'
 import * as React from 'react'
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
 import { useResizable } from 'react-resizable-layout'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { setRootContainerElement } from '~/atoms/dom'
 import {

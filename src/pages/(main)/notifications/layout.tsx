@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { Tabs, TabsList, TabsTrigger } from '~/components/ui/tabs'
 import { useNotificationLength } from '~/store/notification/hooks'

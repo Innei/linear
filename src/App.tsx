@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 
 import { useAppIsReady } from './atoms/app'
 import { appLog } from './lib/log'
