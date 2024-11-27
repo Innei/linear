@@ -18,12 +18,20 @@ import {
   useSidebarColumnShow,
   useSidebarColumnTempShow,
 } from '~/atoms/sidebar'
+import { setUser } from '~/atoms/user'
 import { Sidebar } from '~/components/layout/sidebar'
 import { PanelSplitter } from '~/components/ui/divider'
 import { Kbd } from '~/components/ui/kbd/Kbd'
 import { clsxm } from '~/lib/cn'
 import { preventDefault } from '~/lib/dom'
+import { octokit } from '~/lib/octokit'
 
+export const loader = async () => {
+  const { data } = await octokit.rest.users.getAuthenticated()
+  setUser(data)
+
+  return { user: data }
+}
 export const Component = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   return (

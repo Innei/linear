@@ -3,6 +3,7 @@ import { TooltipPortal } from '@radix-ui/react-tooltip'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { memo, useMemo, useState } from 'react'
 
+import { useUser } from '~/atoms/user'
 import { RelativeTime } from '~/components/ui/datetime'
 import {
   Tooltip,
@@ -10,7 +11,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui/tooltip'
 import { cn } from '~/lib/cn'
-import { resolveHtmlUrl } from '~/lib/gh'
+import { getGitHubURL } from '~/lib/gh'
 import {
   useNotification,
   useSortedNotifications,
@@ -73,24 +74,11 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
   const repo = useRepo(notification.repositoryId)
   const prevRepoEqual = prevRepo?.id === repo?.id
 
-  // TODO CI activity url ????
-  const [remoteFetchedUrl, _setRemoteFetchedUrl] = useState<string | null>(null)
+  const user = useUser()
+
   const resolvedUrl = useMemo(() => {
-    return (
-      remoteFetchedUrl ||
-      resolveHtmlUrl(
-        notification.subject.type,
-        repo?.html_url,
-        notification.subject.url,
-      ) ||
-      notification.subject.url
-    )
-  }, [
-    notification.subject.type,
-    notification.subject.url,
-    remoteFetchedUrl,
-    repo?.html_url,
-  ])
+    return getGitHubURL(notification, repo, user?.id?.toString())
+  }, [notification, repo, user?.id])
 
   const { unread } = notification
 
@@ -117,18 +105,22 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
       <div className="flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Avatar.Root className="size-6">
-              <Avatar.Image
-                className="size-6 rounded-full"
-                src={repo?.owner.avatar_url}
-              />
-              <Avatar.Fallback
-                delayMs={100}
-                className="center inline-flex size-6 rounded-full border text-xs text-base-content/50"
-              >
-                {repo?.owner.login.slice(0, 2)}
-              </Avatar.Fallback>
-            </Avatar.Root>
+            {!prevRepoEqual && repo ? (
+              <Avatar.Root className="size-6">
+                <Avatar.Image
+                  className="size-6 rounded-full"
+                  src={repo?.owner.avatar_url}
+                />
+                <Avatar.Fallback
+                  delayMs={100}
+                  className="center inline-flex size-6 rounded-full border text-xs text-base-content/50"
+                >
+                  {repo?.owner.login.slice(0, 2)}
+                </Avatar.Fallback>
+              </Avatar.Root>
+            ) : (
+              <div className="size-6" />
+            )}
           </TooltipTrigger>
           <TooltipPortal>
             <TooltipContent>
@@ -159,10 +151,6 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
           >
             {notification.subject.title}
           </div>
-          {/* <RemoteFetchUrl
-            setRemoteFetchedUrl={setRemoteFetchedUrl}
-            type={notification.subject.type}
-          /> */}
         </div>
       </div>
 
