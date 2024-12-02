@@ -1,11 +1,15 @@
+import * as Avatar from '@radix-ui/react-avatar'
 import { formatDate } from 'date-fns'
 
+import { cx } from '~/lib/cn'
 import {
   useIsSyncingNotifications,
   useNotificationSyncAt,
   useNotificationUpdatedAt,
 } from '~/store/notification/hooks'
+import { useRepoList } from '~/store/repo/hooks'
 
+import { ScrollArea } from '../ui/scroll-area/ScrollArea'
 import {
   Tooltip,
   TooltipContent,
@@ -14,11 +18,26 @@ import {
 } from '../ui/tooltip'
 
 export const Sidebar = () => {
+  return (
+    <>
+      <Logo />
+
+      <ScrollArea rootClassName="h-0 grow overflow-auto">
+        <Repositories />
+      </ScrollArea>
+
+      <Footer />
+      <SyncingIndicator />
+    </>
+  )
+}
+
+const SyncingIndicator = () => {
   const isSyncingNotifications = useIsSyncingNotifications()
   const syncAt = useNotificationSyncAt()
   const updatedAt = useNotificationUpdatedAt()
   return (
-    <div className={'flex relative h-full flex-col space-y-3 border-r pt-2.5'}>
+    <>
       {isSyncingNotifications ? (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -47,6 +66,48 @@ export const Sidebar = () => {
           </TooltipPortal>
         </Tooltip>
       )}
-    </div>
+    </>
   )
+}
+
+const Logo = () => {
+  // TODO: add logo
+  return <div className="px-8 py-6 text-lg font-bold">Linear</div>
+}
+
+const Repositories = () => {
+  const repoList = useRepoList()
+  return (
+    <ul className="flex flex-col px-4">
+      {repoList.map((repo) => (
+        <li
+          key={repo.id}
+          className={cx(
+            'flex min-w-0 cursor-button items-center gap-2 overflow-hidden rounded-md py-1 duration-200',
+            'hover:bg-zinc-200 dark:hover:bg-neutral-900',
+          )}
+        >
+          <Avatar.Root className="size-5 shrink-0">
+            <Avatar.Image
+              className="rounded-full"
+              src={repo.owner.avatar_url}
+            />
+            <Avatar.Fallback
+              delayMs={100}
+              className="center inline-flex rounded-full border text-xs text-base-content/50"
+            >
+              {repo.owner.login.slice(0, 2)}
+            </Avatar.Fallback>
+          </Avatar.Root>
+          <span className="opacity-90 duration-200 hover:opacity-100">
+            {repo.name}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+const Footer = () => {
+  return <div className="px-4 py-2 text-xs text-base-content/50">Footer</div>
 }

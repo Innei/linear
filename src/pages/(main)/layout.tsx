@@ -117,6 +117,7 @@ const SidebarResponsiveResizerContainer = ({
         data-hide-in-print
         className={clsxm(
           'shrink-0 overflow-hidden bg-sidebar',
+          'flex flex-col grow',
           'absolute inset-y-0 z-[2]',
           sidebarColumnTempShow &&
             !sidebarColumnShow &&

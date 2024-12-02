@@ -102,8 +102,8 @@ export const RelativeTime: FC<{
   return (
     <Tooltip>
       {/* https://github.com/radix-ui/primitives/issues/2248#issuecomment-2147056904 */}
-      <TooltipTrigger onFocusCapture={stopPropagation}>
-        {relative} ago
+      <TooltipTrigger onFocusCapture={stopPropagation} className="tabular-nums">
+        {relative.replace('about ', '')} ago
       </TooltipTrigger>
 
       <TooltipPortal>
