@@ -5,6 +5,7 @@ import { memo, useMemo, useState } from 'react'
 
 import { useUser } from '~/atoms/user'
 import { RelativeTime } from '~/components/ui/datetime'
+import { ActivityType } from '~/components/ui/icons/ActivityType'
 import {
   Tooltip,
   TooltipContent,
@@ -33,6 +34,12 @@ export const NotificationList = memo(() => {
 
   return (
     <div className="grow overflow-auto py-4" ref={setParentRef}>
+      {/* <List
+        id="notifications"
+        keyExtractor={(item) => item.id}
+        data={notifications}
+        renderItem={Render}
+      /> */}
       <div
         style={{
           height: `${rowVirtualizer.getTotalSize()}px`,
@@ -64,6 +71,9 @@ export const NotificationList = memo(() => {
     </div>
   )
 })
+// const Render = memo(({ item }: { item: DB_Notification }) => {
+//   return <NotificationItem id={item.id} />
+// })
 const NotificationItem = memo((props: { id: string; prevId?: string }) => {
   const notification = useNotification(props.id)
   const prevNotificationRepoId = useNotification(
@@ -105,17 +115,18 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
       <div className="flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
+            {/* FIXME: 这里可能不显示 */}
             {!prevRepoEqual && repo ? (
-              <Avatar.Root className="size-6">
+              <Avatar.Root className="size-6 shrink-0">
                 <Avatar.Image
                   className="size-6 rounded-full"
-                  src={repo?.owner.avatar_url}
+                  src={repo.owner.avatar_url}
                 />
                 <Avatar.Fallback
                   delayMs={100}
                   className="center inline-flex size-6 rounded-full border text-xs text-base-content/50"
                 >
-                  {repo?.owner.login.slice(0, 2)}
+                  {repo.owner.login.slice(0, 2)}
                 </Avatar.Fallback>
               </Avatar.Root>
             ) : (
@@ -124,7 +135,7 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
           </TooltipTrigger>
           <TooltipPortal>
             <TooltipContent>
-              {repo?.owner.login}/{repo?.name}
+              {repo.owner.login}/{repo.name}
             </TooltipContent>
           </TooltipPortal>
         </Tooltip>
@@ -147,14 +158,18 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
             className={cn(
               "before:mr-1.5 before:inline-block before:size-2 before:translate-y-[-2px] before:rounded-full before:bg-accent before:duration-200 before:content-['']",
               !unread && 'before:-mr-2 before:scale-0',
+              'flex min-w-0 items-center',
             )}
           >
-            {notification.subject.title}
+            <span className="shrink-0 translate-y-0.5 self-start">
+              <ActivityType type={notification.subject.type} />
+            </span>
+            <span className="ml-1 shrink">{notification.subject.title}</span>
           </div>
         </div>
       </div>
 
-      <div className="text-xs tabular-nums text-tertiary">
+      <div className="ml-2 shrink-0 text-xs tabular-nums text-tertiary">
         <RelativeTime
           displayAbsoluteTimeAfterDay={1}
           date={notification.updated_at}
