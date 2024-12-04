@@ -82,11 +82,13 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
   )
   const prevRepo = useRepo(prevNotificationRepoId || 0)
   const repo = useRepo(notification.repositoryId)
+
   const prevRepoEqual = prevRepo?.id === repo?.id
 
   const user = useUser()
 
   const resolvedUrl = useMemo(() => {
+    if (!repo) return null
     return getGitHubURL(notification, repo, user?.id?.toString())
   }, [notification, repo, user?.id])
 
@@ -94,10 +96,12 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
 
   if (!notification) return null
 
+  if (!repo?.owner) return null
+
   return (
     <a
       data-id={notification.id}
-      href={resolvedUrl}
+      href={resolvedUrl || ''}
       onClick={(e) => {
         e.preventDefault()
 

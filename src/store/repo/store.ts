@@ -1,7 +1,5 @@
-import type { DB_Notification, DB_Repo } from '~/database/schemas'
-import { MetaKey, MetaService } from '~/database/services/meta'
-import { NotificationService } from '~/database/services/notification'
-import { octokit } from '~/lib/octokit'
+import type { DB_Repo } from '~/database/schemas'
+import { RepoService } from '~/database/services/repo'
 
 import { createZustandStore } from '../utils/helper'
 
@@ -12,7 +10,7 @@ export const useRepoStore = createZustandStore<RepoStoreState>('repo')(() => ({
   repos: {},
 }))
 
-const get = useRepoStore.getState
+// const get = useRepoStore.getState
 const set = useRepoStore.setState
 
 class RepoStoreActionsStatic {
@@ -25,6 +23,7 @@ class RepoStoreActionsStatic {
 
       return { ...state, repos: map }
     })
+    RepoService.upsertMany(data)
   }
 }
 

@@ -1,12 +1,12 @@
 import type { components } from '@octokit/openapi-types'
 
 import { NotificationStoreActions } from '~/store/notification/store'
+import { RepoStoreActions } from '~/store/repo/store'
 
 import type { BrowserDBTable } from '../db'
 import { browserDB } from '../db'
 import type { DB_Notification } from '../schemas'
 import type { Hydratable } from './base'
-import { RepoService } from './repo'
 
 class NotificationServiceStatic implements Hydratable {
   private table: BrowserDBTable<'notifications'>
@@ -38,7 +38,8 @@ class NotificationServiceStatic implements Hydratable {
     const repos = data.map(({ repository }) => repository)
     await Promise.all([
       this.table.bulkPut(insertedData),
-      RepoService.upsertMany(repos),
+
+      RepoStoreActions.upsertMany(repos),
     ])
     return insertedData
   }
