@@ -22,7 +22,7 @@ export const Sidebar = () => {
     <>
       <Logo />
 
-      <ScrollArea rootClassName="h-0 grow overflow-auto">
+      <ScrollArea flex rootClassName="h-0 grow overflow-auto">
         <Repositories />
       </ScrollArea>
 
@@ -83,7 +83,7 @@ const Repositories = () => {
         <li
           key={repo.id}
           className={cx(
-            'flex min-w-0 cursor-button items-center gap-2 overflow-hidden rounded-md py-1 duration-200',
+            'flex min-w-0 truncate cursor-button items-center gap-2 overflow-hidden rounded-md py-1 duration-200',
             'hover:bg-zinc-200 dark:hover:bg-neutral-900',
           )}
         >
@@ -99,7 +99,7 @@ const Repositories = () => {
               {repo.owner.login.slice(0, 2)}
             </Avatar.Fallback>
           </Avatar.Root>
-          <span className="opacity-90 duration-200 hover:opacity-100">
+          <span className="min-w-0 truncate opacity-90 duration-200 hover:opacity-100">
             {repo.name}
           </span>
         </li>
