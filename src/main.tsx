@@ -1,3 +1,4 @@
+import './scan'
 import './styles/index.css'
 
 import { ClickToComponent } from 'click-to-react-component'

@@ -1,59 +1,93 @@
+import type { TabsProps } from '@radix-ui/react-tabs'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { m } from 'framer-motion'
 import * as React from 'react'
-import type { VariantProps } from 'tailwind-variants'
 import { tv } from 'tailwind-variants'
 
-import { clsxm } from '~/lib/cn'
+import { cx } from '~/lib/cn'
 
 const TabsIdContext = React.createContext<string | null>(null)
+const SetTabIndicatorContext = React.createContext<
+  React.Dispatch<
+    React.SetStateAction<{
+      w: number
+      x: number
+    }>
+  >
+>(() => {})
 
-const Tabs: typeof TabsPrimitive.Root = React.forwardRef((props, ref) => {
-  const { children, ...rest } = props
+const TabVariantContext = React.createContext<
+  'default' | 'rounded' | undefined
+>(undefined)
+
+const TabIndicatorContext = React.createContext<{
+  w: number
+  x: number
+} | null>(null)
+
+const Tabs: React.ForwardRefExoticComponent<
+  TabsProps &
+    React.RefAttributes<HTMLDivElement> & {
+      variant?: 'default' | 'rounded'
+    }
+> = React.forwardRef((props, ref) => {
+  const { children, variant, ...rest } = props
+  const [indicator, setIndicator] = React.useState({
+    w: 0,
+    x: 0,
+  })
   const id = React.useId()
 
   return (
     <TabsIdContext.Provider value={id}>
-      <TabsPrimitive.Root {...rest} ref={ref}>
-        {children}
-      </TabsPrimitive.Root>
+      <SetTabIndicatorContext.Provider value={setIndicator}>
+        <TabsPrimitive.Root {...rest} ref={ref}>
+          <TabIndicatorContext.Provider value={indicator}>
+            <TabVariantContext.Provider value={variant}>
+              {children}
+            </TabVariantContext.Provider>
+          </TabIndicatorContext.Provider>
+        </TabsPrimitive.Root>
+      </SetTabIndicatorContext.Provider>
     </TabsIdContext.Provider>
   )
 })
 
-const tabsListVariants = tv({
-  base: '',
-  variants: {
-    variant: {
-      default: 'border-b',
-      rounded: 'rounded-md bg-muted p-1',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-})
 export interface TabsListProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>,
-    VariantProps<typeof tabsListVariants> {}
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {}
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   TabsListProps
->(({ className, variant, ...props }, ref) => (
-  <TabsPrimitive.List
-    ref={ref}
-    className={clsxm(
-      'text-muted-foreground inline-flex items-center justify-center',
-      tabsListVariants({ variant }),
-      className,
-    )}
-    {...props}
-  />
-))
-TabsList.displayName = TabsPrimitive.List.displayName
+>(({ className, ...props }, ref) => {
+  const indicator = React.useContext(TabIndicatorContext)
+  const variant = React.useContext(TabVariantContext)
 
+  return (
+    <TabsPrimitive.List
+      ref={ref}
+      className={cx(
+        'relative inline-flex items-center justify-center text-muted-foreground',
+        className,
+      )}
+    >
+      {props.children}
+
+      <span
+        className={cx(
+          'absolute left-0 duration-200 will-change-[transform,width]',
+          variant === 'rounded'
+            ? 'inset-0 z-0 h-[calc(100%-12px)] my-auto rounded-2xl bg-muted group-hover:bg-theme-item-hover'
+            : 'bottom-0 h-0.5 rounded bg-accent',
+        )}
+        style={{
+          width: indicator?.w,
+          transform: `translate3d(${indicator?.x}px, 0, 0)`,
+        }}
+      />
+    </TabsPrimitive.List>
+  )
+})
+TabsList.displayName = TabsPrimitive.List.displayName
 const tabsTriggerVariants = tv({
-  base: '',
   variants: {
     variant: {
       default:
@@ -67,27 +101,32 @@ const tabsTriggerVariants = tv({
 })
 
 export interface TabsTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>,
-    VariantProps<typeof tabsTriggerVariants> {}
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {}
 const TabsTrigger = React.forwardRef<HTMLDivElement, TabsTriggerProps>(
-  ({ className, variant, children, ...props }, ref) => {
+  ({ className, children, ...props }, ref) => {
+    const variant = React.useContext(TabVariantContext)
     const triggerRef = React.useRef<HTMLDivElement>(null)
     React.useImperativeHandle(ref, () => triggerRef.current!, [])
 
-    const [isSelect, setIsSelect] = React.useState(false)
-    const id = React.useContext(TabsIdContext)
-    const layoutId = `tab-selected-underline-${id}`
+    const setIndicator = React.useContext(SetTabIndicatorContext)
+
     React.useLayoutEffect(() => {
       if (!triggerRef.current) return
 
-      const trigger = triggerRef.current as HTMLElement
-
-      const isSelect = trigger.dataset.state === 'active'
-      setIsSelect(isSelect)
-      const ob = new MutationObserver(() => {
+      const handler = () => {
+        const trigger = triggerRef.current as HTMLElement
         const isSelect = trigger.dataset.state === 'active'
-        setIsSelect(isSelect)
-      })
+        if (isSelect) {
+          setIndicator({
+            w: trigger.clientWidth,
+            x: trigger.offsetLeft,
+          })
+        }
+      }
+
+      handler()
+      const trigger = triggerRef.current as HTMLElement
+      const ob = new MutationObserver(handler)
       ob.observe(trigger, {
         attributes: true,
         attributeFilter: ['data-state'],
@@ -96,36 +135,19 @@ const TabsTrigger = React.forwardRef<HTMLDivElement, TabsTriggerProps>(
       return () => {
         ob.disconnect()
       }
-    }, [])
+    }, [setIndicator])
 
     return (
       <TabsPrimitive.Trigger
         ref={triggerRef as any}
-        className={clsxm(
-          'ring-offset-background data-[state=active]:text-theme-foreground inline-flex items-center justify-center whitespace-nowrap px-3 text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50',
+        className={cx(
+          'inline-flex items-center justify-center whitespace-nowrap px-3 text-sm font-medium ring-offset-background transition-all disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-theme-foreground',
           'group relative z-[1]',
           tabsTriggerVariants({ variant }),
-          // !isSelect &&
-          //   "hover:before:bg-theme-item-hover before:content-[''] before:pointer-events-none before:absolute before:inset-y-0 before:inset-x-1 before:duration-200 before:opacity-60 before:rounded-lg",
-          // className,
         )}
         {...props}
       >
         {children}
-        {isSelect && (
-          <m.span
-            layoutId={layoutId}
-            style={{
-              originY: '0px',
-            }}
-            className={clsxm(
-              'absolute',
-              variant === 'rounded'
-                ? 'bg-[var(--header-tab-link-bg)] group-hover:bg-theme-item-hover inset-0 z-[-1] rounded-lg duration-200'
-                : '-bottom-1 h-0.5 w-[calc(100%-16px)] rounded bg-accent',
-            )}
-          />
-        )}
       </TabsPrimitive.Trigger>
     )
   },
@@ -138,7 +160,7 @@ const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={clsxm(
+    className={cx(
       'ring-offset-background mt-2 focus-visible:outline-none',
       className,
     )}

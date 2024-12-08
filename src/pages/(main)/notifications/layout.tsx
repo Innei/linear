@@ -1,19 +1,31 @@
 import { Outlet } from 'react-router'
 
 import { Tabs, TabsList, TabsTrigger } from '~/components/ui/tabs'
+import type { NotificationType } from '~/hooks/biz/useRouter'
+import { useRouteParams, useRouter } from '~/hooks/biz/useRouter'
 import { useNotificationLength } from '~/store/notification/hooks'
 
 export const Component = () => {
   const length = useNotificationLength()
+  const { type } = useRouteParams()
+  const { navigate } = useRouter()
 
   return (
     <div className="flex relative grow flex-col">
       <div className="flex relative items-center">
-        <Tabs defaultValue="all" className="w-full border-b">
+        <Tabs
+          variant="rounded"
+          value={type || 'all'}
+          onValueChange={(value) => {
+            navigate({
+              type: value as NotificationType,
+            })
+          }}
+          className="w-full border-b"
+        >
           <TabsList className="border-b-0 p-2">
-            <TabsTrigger variant="rounded" value="all">
-              All
-            </TabsTrigger>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="unread">Unread</TabsTrigger>
           </TabsList>
         </Tabs>
 

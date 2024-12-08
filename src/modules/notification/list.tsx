@@ -11,8 +11,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
+import { useRouteParams } from '~/hooks/biz/useRouter'
 import { cn } from '~/lib/cn'
 import { getGitHubURL } from '~/lib/gh'
+import { filterUnreadNotifications } from '~/store/notification/helper'
 import {
   useNotification,
   useSortedNotifications,
@@ -21,7 +23,10 @@ import { NotificationStoreActions } from '~/store/notification/store'
 import { useRepo } from '~/store/repo/hooks'
 
 export const NotificationList = memo(() => {
-  const notifications = useSortedNotifications()
+  const { type } = useRouteParams()
+  const notifications = useSortedNotifications(
+    type === 'unread' ? filterUnreadNotifications : undefined,
+  )
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
 
   // The virtualizer
@@ -49,6 +54,7 @@ export const NotificationList = memo(() => {
         {rowVirtualizer.getVirtualItems().map((virtualItem) => {
           return (
             <div
+              className="duration-200 will-change-transform"
               key={virtualItem.key}
               ref={rowVirtualizer.measureElement}
               data-index={virtualItem.index}
@@ -160,7 +166,7 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
           )}
           <div
             className={cn(
-              "before:mr-1.5 before:inline-block before:size-2 before:translate-y-[-2px] before:rounded-full before:bg-accent before:duration-200 before:content-['']",
+              "before:mr-1.5 before:inline-block before:size-2 before:shrink-0 before:translate-y-[-2px] before:rounded-full before:bg-accent before:duration-200 before:content-['']",
               !unread && 'before:-mr-2 before:scale-0',
               'flex min-w-0 items-center',
             )}
