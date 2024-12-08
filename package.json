@@ -33,7 +33,7 @@
     "dexie": "4.0.10",
     "es-toolkit": "1.27.0",
     "foxact": "0.2.42",
-    "framer-motion": "11.11.17",
+    "framer-motion": "11.13.1",
     "immer": "10.1.1",
     "jotai": "2.10.3",
     "octokit": "4.0.2",
