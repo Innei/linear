@@ -1,7 +1,7 @@
 import * as Avatar from '@radix-ui/react-avatar'
 import { TooltipPortal } from '@radix-ui/react-tooltip'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { memo, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 
 import { useUser } from '~/atoms/user'
 import { RelativeTime } from '~/components/ui/datetime'
@@ -11,6 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
+import type { DB_Notification } from '~/database'
 import { useRouteParams } from '~/hooks/biz/useRouter'
 import { cn } from '~/lib/cn'
 import { getGitHubURL } from '~/lib/gh'
@@ -19,7 +20,13 @@ import {
   useNotification,
   useSortedNotifications,
 } from '~/store/notification/hooks'
-import { NotificationStoreActions } from '~/store/notification/store'
+import {
+  selectSortedNotification,
+} from '~/store/notification/selectors'
+import {
+  NotificationStoreActions,
+  useNotificationStore,
+} from '~/store/notification/store'
 import { useRepo } from '~/store/repo/hooks'
 
 export const NotificationList = memo(() => {
@@ -27,11 +34,32 @@ export const NotificationList = memo(() => {
   const notifications = useSortedNotifications(
     type === 'unread' ? filterUnreadNotifications : undefined,
   )
+
+  const [unreadNotificationSnapshot, setUnreadNotificationSnapshot] = useState(
+    [] as DB_Notification[],
+  )
+
+  // 增量 unread 的判断 是否有最新的通知
+  // const isNotificationsUnreadChanged =
+  //   notifications.length !== unreadNotificationSnapshot.length
+
+  useEffect(() => {
+    if (type === 'unread') {
+      const state = useNotificationStore.getState()
+      setUnreadNotificationSnapshot(
+        selectSortedNotification(filterUnreadNotifications)(state),
+      )
+    }
+  }, [type])
+
+  const finalNotifications =
+    type === 'unread' ? unreadNotificationSnapshot : notifications
+
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
 
   // The virtualizer
   const rowVirtualizer = useVirtualizer({
-    count: notifications.length,
+    count: finalNotifications.length,
     getScrollElement: () => parentRef,
     estimateSize: () => 12,
     overscan: 30,
@@ -67,8 +95,10 @@ export const NotificationList = memo(() => {
               }}
             >
               <NotificationItem
-                id={notifications[virtualItem.index].id}
-                prevId={notifications[virtualItem.index - 1]?.id || undefined}
+                id={finalNotifications[virtualItem.index].id}
+                prevId={
+                  finalNotifications[virtualItem.index - 1]?.id || undefined
+                }
               />
             </div>
           )
