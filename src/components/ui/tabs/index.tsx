@@ -75,7 +75,7 @@ const TabsList = React.forwardRef<
         className={cx(
           'absolute left-0 duration-200 will-change-[transform,width]',
           variant === 'rounded'
-            ? 'inset-0 z-0 h-[calc(100%-12px)] my-auto rounded-2xl bg-muted group-hover:bg-theme-item-hover'
+            ? 'inset-0 z-0 h-[calc(100%-12px)] my-auto rounded bg-muted group-hover:bg-theme-item-hover'
             : 'bottom-0 h-0.5 rounded bg-accent',
         )}
         style={{

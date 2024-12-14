@@ -255,6 +255,7 @@ const RepositoryItem = memo(
           'flex min-w-0 truncate cursor-button items-center gap-2 overflow-hidden rounded-md py-1 duration-200',
           'hover:bg-zinc-200 dark:hover:bg-neutral-900',
           isActive && 'bg-zinc-200 dark:bg-neutral-900',
+          'text-[14px]',
           className,
         )}
       >
