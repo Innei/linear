@@ -13,6 +13,7 @@ import {
 } from '~/components/ui/tooltip'
 import type { DB_Notification } from '~/database'
 import { useRouteParams } from '~/hooks/biz/useRouter'
+import { useRefValue } from '~/hooks/common'
 import { cn } from '~/lib/cn'
 import { getGitHubURL } from '~/lib/gh'
 import { filterUnreadNotifications } from '~/store/notification/helper'
@@ -20,10 +21,8 @@ import {
   useNotification,
   useSortedNotifications,
 } from '~/store/notification/hooks'
-import { selectSortedNotification } from '~/store/notification/selectors'
 import {
   NotificationStoreActions,
-  useNotificationStore,
 } from '~/store/notification/store'
 import { useRepo } from '~/store/repo/hooks'
 
@@ -45,6 +44,8 @@ export const NotificationList = memo(({ repoId }: NotificationListProps) => {
     return allNotifications
   }, [allNotifications, repoId])
 
+  const notificationsRef = useRefValue(notifications)
+
   const [unreadNotificationSnapshot, setUnreadNotificationSnapshot] = useState(
     [] as DB_Notification[],
   )
@@ -55,12 +56,11 @@ export const NotificationList = memo(({ repoId }: NotificationListProps) => {
 
   useEffect(() => {
     if (type === 'unread') {
-      const state = useNotificationStore.getState()
       setUnreadNotificationSnapshot(
-        selectSortedNotification(filterUnreadNotifications)(state),
+        notificationsRef.current as DB_Notification[],
       )
     }
-  }, [type])
+  }, [notificationsRef, type])
 
   const finalNotifications =
     type === 'unread' ? unreadNotificationSnapshot : notifications
