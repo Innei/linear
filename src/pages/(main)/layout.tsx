@@ -19,7 +19,7 @@ import {
   useSidebarColumnTempShow,
 } from '~/atoms/sidebar'
 import { setUser } from '~/atoms/user'
-import { Sidebar } from '~/components/layout/sidebar'
+import { Sidebar } from '~/components/layout/sidebar/index'
 import { PanelSplitter } from '~/components/ui/divider'
 import { Kbd } from '~/components/ui/kbd/Kbd'
 import { clsxm } from '~/lib/cn'

@@ -3,11 +3,11 @@ import { Outlet } from 'react-router'
 import { Tabs, TabsList, TabsTrigger } from '~/components/ui/tabs'
 import type { NotificationType } from '~/hooks/biz/useRouter'
 import { useRouteParams, useRouter } from '~/hooks/biz/useRouter'
-import { useNotificationLength } from '~/store/notification/hooks'
+import { useNotificationLengthByRepoId } from '~/store/notification/hooks'
 
 export const Component = () => {
-  const length = useNotificationLength()
-  const { type } = useRouteParams()
+  const { type, repoId } = useRouteParams()
+  const length = useNotificationLengthByRepoId(repoId)
   const { navigate } = useRouter()
 
   return (

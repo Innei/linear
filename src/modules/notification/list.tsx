@@ -20,20 +20,30 @@ import {
   useNotification,
   useSortedNotifications,
 } from '~/store/notification/hooks'
-import {
-  selectSortedNotification,
-} from '~/store/notification/selectors'
+import { selectSortedNotification } from '~/store/notification/selectors'
 import {
   NotificationStoreActions,
   useNotificationStore,
 } from '~/store/notification/store'
 import { useRepo } from '~/store/repo/hooks'
 
-export const NotificationList = memo(() => {
+export type NotificationListProps = {
+  repoId?: string
+}
+export const NotificationList = memo(({ repoId }: NotificationListProps) => {
   const { type } = useRouteParams()
-  const notifications = useSortedNotifications(
+  const allNotifications = useSortedNotifications(
     type === 'unread' ? filterUnreadNotifications : undefined,
   )
+
+  const notifications = useMemo(() => {
+    if (repoId) {
+      return allNotifications.filter(
+        (n) => n.repositoryId.toString() === repoId,
+      )
+    }
+    return allNotifications
+  }, [allNotifications, repoId])
 
   const [unreadNotificationSnapshot, setUnreadNotificationSnapshot] = useState(
     [] as DB_Notification[],
@@ -155,7 +165,6 @@ const NotificationItem = memo((props: { id: string; prevId?: string }) => {
       <div className="flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            {/* FIXME: 这里可能不显示 */}
             {!prevRepoEqual && repo ? (
               <Avatar.Root className="size-6 shrink-0">
                 <Avatar.Image

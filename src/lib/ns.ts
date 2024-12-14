@@ -1,4 +1,4 @@
-const ns = 'app'
+const ns = 'linear'
 export const getStorageNS = (key: string) => `${ns}:${key}`
 
 export const clearStorage = () => {

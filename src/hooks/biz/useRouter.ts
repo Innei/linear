@@ -6,7 +6,7 @@ import {
   useReadonlyRouteSelector,
 } from '~/atoms/route'
 
-const ALL_REPO = 'all'
+export const ALL_REPO = 'all'
 export type NotificationType = 'all' | 'unread'
 export const useRouteParams = () => {
   const search = useReadonlyRouteSelector((state) => {
@@ -15,7 +15,7 @@ export const useRouteParams = () => {
     }
   })
   const params = useReadonlyRouteSelector((state) => {
-    return { repo: state.params.repo || ALL_REPO }
+    return { repoId: state.params.repo || ALL_REPO }
   })
   return { ...search, ...params }
 }

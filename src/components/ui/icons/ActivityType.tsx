@@ -36,6 +36,9 @@ export const ActivityType = ({
     case 'Discussion': {
       return <i className="i-mingcute-comment-line text-yellow-500" />
     }
+    case 'CheckSuite': {
+      return <i className="i-mingcute-close-line text-red-500" />
+    }
     default: {
       return null
     }

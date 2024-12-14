@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 
 import type { DB_Notification } from '~/database'
+import { ALL_REPO } from '~/hooks/biz/useRouter'
 
 import { selectNotificationLength, selectSortedNotification } from './selectors'
 import { useNotificationStore } from './store'
@@ -35,6 +36,17 @@ export function useNotification<T>(
 
 export const useNotificationLength = () => {
   return useNotificationStore(selectNotificationLength)
+}
+
+export const useNotificationLengthByRepoId = (repoId: string) => {
+  return useNotificationStore((state) => {
+    if (repoId === ALL_REPO) {
+      return selectNotificationLength(state)
+    }
+    return Object.values(state.notifications).filter(
+      (n) => n.repositoryId.toString() === repoId,
+    ).length
+  })
 }
 
 export const useNotificationSyncAt = () => {
