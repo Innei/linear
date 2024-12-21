@@ -7,6 +7,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import { memo, useMemo } from 'react'
 import { Link } from 'react-router'
 
+import PKG from '~/../package.json'
 import { useScrollViewElement } from '~/components/ui/scroll-area/hooks'
 import type { DB_Repo } from '~/database'
 import { ALL_REPO, useRouteParams, useRouter } from '~/hooks/biz/useRouter'
@@ -282,7 +283,8 @@ const RepositoryItem = memo(
     )
   },
 )
-
 const Footer = () => {
-  return <div className="px-4 py-2 text-xs text-base-content/50">Footer</div>
+  return (
+    <div className="px-4 py-2 text-xs text-base-content/50">{PKG.version}</div>
+  )
 }
