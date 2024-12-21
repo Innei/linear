@@ -39,6 +39,9 @@ export const ActivityType = ({
     case 'CheckSuite': {
       return <i className="i-mingcute-close-line text-red-500" />
     }
+    case 'Release': {
+      return <i className="i-mingcute-tag-2-line text-green-500" />
+    }
     default: {
       return null
     }

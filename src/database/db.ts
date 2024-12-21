@@ -1,14 +1,25 @@
-import type { Transaction } from 'dexie'
 import Dexie from 'dexie'
+import {
+  exportDB,
+  importDB,
+} from 'dexie-export-import'
 
 import { LOCAL_DB_NAME } from './constants'
-import { dbSchemaV1 } from './db_schema'
-import type { DB_Meta, DB_Notification, DB_Repo } from './schemas'
+import { dbSchemaV1, dbSchemaV2 } from './db_schema'
+import type {
+  DB_Issue,
+  DB_Meta,
+  DB_Notification,
+  DB_PullRequest,
+  DB_Repo,
+} from './schemas'
 
 export interface LocalDBSchemaMap {
   repos: DB_Repo
   notifications: DB_Notification
   meta: DB_Meta
+  issues: DB_Issue
+  pullRequests: DB_PullRequest
 }
 
 // Define a local DB
@@ -16,14 +27,27 @@ class BrowserDB extends Dexie {
   public repos: BrowserDBTable<'repos'>
   public notifications: BrowserDBTable<'notifications'>
   public meta: BrowserDBTable<'meta'>
+  public issues: BrowserDBTable<'issues'>
+  public pullRequests: BrowserDBTable<'pullRequests'>
 
   constructor() {
     super(LOCAL_DB_NAME)
     this.version(1).stores(dbSchemaV1)
+    this.version(2).stores(dbSchemaV2)
 
     this.repos = this.table('repos')
     this.notifications = this.table('notifications')
     this.meta = this.table('meta')
+    this.issues = this.table('issues')
+    this.pullRequests = this.table('pullRequests')
+  }
+
+  export() {
+    return exportDB(this)
+  }
+
+  importDb(data: Blob) {
+    return importDB(data, this)
   }
 }
 

@@ -7,6 +7,8 @@ import { NotificationService } from '~/database/services/notification'
 import { appLog } from '~/lib/log'
 import { octokit } from '~/lib/octokit'
 
+import { issueAction } from '../issue/store'
+import { pullRequestAction } from '../pull-request/store'
 import { createTransaction, createZustandStore } from '../utils/helper'
 
 interface NotificationStoreState {
@@ -19,6 +21,7 @@ interface NotificationStoreState {
   lastModified: Nullable<Date>
 }
 
+declare const window: any
 export const useNotificationStore = createZustandStore<NotificationStoreState>(
   'notification',
 )(() => ({
@@ -85,6 +88,11 @@ class NotificationStoreActionsStatic {
   async markAllAsRead() {
     //  TODO
   }
+
+  collectAll() {
+    const data = Object.values(get().notifications)
+    collectData(data)
+  }
 }
 
 export const NotificationStoreActions = new NotificationStoreActionsStatic()
@@ -137,6 +145,8 @@ class NotificationRequestsStatic {
 
     const { data } = await this._processNotifications(notifications)
 
+    collectData(data)
+
     if (notifications.data.length >= PRE_PAGE_SIZE) {
       set((state) => ({ ...state, syncingDelta: true }))
       this.asyncLoopfetch({ since }).finally(() => {
@@ -184,10 +194,35 @@ class NotificationRequestsStatic {
 
       const data = await NotificationService.upsertMany(notifications.data)
       NotificationStoreActions.upsertMany(data)
+      collectData(data)
       hasMore = notifications.data.length >= PRE_PAGE_SIZE
       page++
     }
   }
 }
 
+const collectData = (data: DB_Notification[]) => {
+  const collectedIssues = [] as DB_Notification[]
+  const collectedPullRequests = [] as DB_Notification[]
+  for (const item of data) {
+    const { type } = item.subject
+    switch (type) {
+      case 'Issue': {
+        collectedIssues.push(item)
+        break
+      }
+      case 'PullRequest': {
+        collectedPullRequests.push(item)
+        break
+      }
+    }
+  }
+  issueAction.collect(collectedIssues)
+  pullRequestAction.collect(collectedPullRequests)
+}
 export const NotificationRequests = new NotificationRequestsStatic()
+
+window.collect = () => {
+  const data = Object.values(get().notifications)
+  collectData(data)
+}
