@@ -44,7 +44,7 @@
     "react-dom": "18.3.1",
     "react-resizable-layout": "npm:@innei/react-resizable-layout@0.7.3-fork.1",
     "react-router": "7.0.2",
-    "react-scan": "0.0.46",
+    "react-scan": "0.0.54",
     "sonner": "1.7.1",
     "tailwind-merge": "2.5.5",
     "use-sync-external-store": "1.4.0",
