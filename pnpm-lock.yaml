@@ -12,8 +12,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@infinite-list/react':
-        specifier: 2.2.7
-        version: 2.2.7
+        specifier: 2.2.11
+        version: 2.2.11
       '@million/lint':
         specifier: 1.0.14
         version: 1.0.14(rollup@4.28.1)
@@ -1253,11 +1253,11 @@ packages:
   '@iconify/utils@2.1.25':
     resolution: {integrity: sha512-Y+iGko8uv/Fz5bQLLJyNSZGOdMW0G7cnlEX1CiNcKsRXX9cq/y/vwxrIAtLCZhKHr3m0VJmsjVPsvnM4uX8YLg==}
 
-  '@infinite-list/data-model@2.2.6':
-    resolution: {integrity: sha512-ZhLtFCesvOaNQ3SSeygEWgqlGHxLW/h6BmHy0RKOwyj8QGN/nZK9lxeB2lrIHALnIlTUPweAzN63YAIuE/XP2g==}
+  '@infinite-list/data-model@2.2.10':
+    resolution: {integrity: sha512-ubpinQohjcTZvZm5PbHzJ0PkZb5SkCuvcnBkR2etdA0O1MqrDLa0iFr6Vu/hxF7e8lqBdKscub2WTXvUW2/9AA==}
 
-  '@infinite-list/react@2.2.7':
-    resolution: {integrity: sha512-lXTJ1jmcz4DbNAX6Ikm2VV8uLRqik9XTd1lLHIeX4+Ln+HxvfG87Z0D6k2ZkAEKQF533i/qG4V5zdul24FPncw==}
+  '@infinite-list/react@2.2.11':
+    resolution: {integrity: sha512-sIykXuAIdSuPBxacExqLMnJpPFvWSuXY7QnDA+d3qGXvrexLRBcxHfVuNjN0OYZYZKeL+G5Kq+sT0AIE9tVlKA==}
 
   '@innei/prettier@0.15.0':
     resolution: {integrity: sha512-5U/NrXsISLSXt3ibqHX3cRfSKcJFmteeEcWXE31oxuT4+n2+aiUjIpc6NL7aeZi09paP8L5uc7Zlj2WCP9S4ig==}
@@ -6220,7 +6220,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@infinite-list/data-model@2.2.6':
+  '@infinite-list/data-model@2.2.10':
     dependencies:
       '@x-oasis/batchinate-last': 0.1.35
       '@x-oasis/batchinator': 0.1.35
@@ -6244,9 +6244,9 @@ snapshots:
       memoize-one: 6.0.0
       tslib: 2.8.1
 
-  '@infinite-list/react@2.2.7':
+  '@infinite-list/react@2.2.11':
     dependencies:
-      '@infinite-list/data-model': 2.2.6
+      '@infinite-list/data-model': 2.2.10
       '@x-oasis/noop': 0.1.35
       '@x-oasis/shallow-equal': 0.1.38
 
