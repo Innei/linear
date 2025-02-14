@@ -34,7 +34,7 @@
     "dexie-export-import": "4.1.4",
     "es-toolkit": "1.32.0",
     "foxact": "0.2.44",
-    "framer-motion": "12.4.2",
+    "framer-motion": "12.4.3",
     "immer": "10.1.1",
     "jotai": "2.12.0",
     "octokit": "4.1.1",
