@@ -10,7 +10,7 @@ require('./plugins/css-plugin')
 const twConfig: Config = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './index.html'],
   darkMode: ['class', '[data-theme="dark"]'],
-  safelist: [],
+
   theme: {
     container: {
       center: true,

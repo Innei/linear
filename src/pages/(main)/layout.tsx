@@ -1,7 +1,7 @@
 import { throttle } from 'es-toolkit'
 import type { PropsWithChildren } from 'react'
 import * as React from 'react'
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useResizable } from 'react-resizable-layout'
 import { Outlet } from 'react-router'
 
@@ -48,7 +48,7 @@ const SidebarResponsiveResizerContainer = ({
   containerRef,
   children,
 }: {
-  containerRef: React.RefObject<HTMLDivElement>
+  containerRef: React.RefObject<HTMLDivElement | null>
 } & PropsWithChildren) => {
   const { isDragging, position, separatorProps, separatorCursor } =
     useResizable({
@@ -56,7 +56,7 @@ const SidebarResponsiveResizerContainer = ({
       min: 256,
       max: 300,
       initial: getUISettings().sidebarColWidth,
-      containerRef,
+      containerRef: containerRef as React.RefObject<HTMLElement>,
 
       onResizeEnd({ position }) {
         setUISetting('sidebarColWidth', position)
@@ -171,8 +171,7 @@ const SidebarResponsiveResizerContainer = ({
   )
 }
 
-const RootContainer = forwardRef<HTMLDivElement, PropsWithChildren>(
-  ({ children }, ref) => {
+const RootContainer = ({ ref, children }: PropsWithChildren & { ref?: React.RefObject<HTMLDivElement | null> }) => {
     const feedColWidth = useUISettingKey('sidebarColWidth')
     const [elementRef, _setElementRef] = useState<HTMLDivElement | null>(null)
     const setElementRef = useCallback((el: HTMLDivElement | null) => {
@@ -194,5 +193,4 @@ const RootContainer = forwardRef<HTMLDivElement, PropsWithChildren>(
         {children}
       </div>
     )
-  },
-)
+  }
