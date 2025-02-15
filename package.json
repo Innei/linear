@@ -56,7 +56,7 @@
     "@egoist/tailwindcss-icons": "1.9.0",
     "@iconify-json/mingcute": "1.2.3",
     "@innei/prettier": "^0.15.0",
-    "@octokit/openapi-types": "23.0.1",
+    "@octokit/openapi-types": "24.0.0",
     "@tailwindcss/container-queries": "0.1.1",
     "@tailwindcss/typography": "0.5.16",
     "@types/node": "22.13.4",
