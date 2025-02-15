@@ -1,22 +1,23 @@
-@tailwind base;
+[data-theme='light'] {
+  --radius: 0.5rem;
+  --border: 20 5.9% 90%;
+  --sidebar: 240 4.8% 95.9%;
 
-@layer base {
-  [data-theme='light'] {
-    --radius: 0.5rem;
-    --border: 20 5.9% 90%;
-    --sidebar: 240 4.8% 95.9%;
-  }
+  --header-tab-link-bg: lch(95% 8.568 282.863 / 1);
+  --muted: 240 4.8% 95.9%;
 
-  [data-theme='dark'] {
-    --radius: 0.5rem;
-    --border: 0 0% 22.1%;
-    --sidebar: 220 8.1% 14.5%;
+  --tertiary: lch(83.788 4.284 282.863);
+}
 
-    --header-tab-link-bg: lch(14.471% 8.568 282.863 / 1);
-    --muted: 220 8.1% 14.5%;
+[data-theme='dark'] {
+  --radius: 0.5rem;
+  --border: 0 0% 22.1%;
+  --sidebar: 220 8.1% 14.5%;
 
-    --tertiary: lch(63.788 4.284 282.863);
-  }
+  --header-tab-link-bg: lch(14.471% 8.568 282.863 / 1);
+  --muted: 220 8.1% 14.5%;
+
+  --tertiary: lch(63.788 4.284 282.863);
 }
 
 html,

@@ -8,6 +8,7 @@ import { memo, useMemo } from 'react'
 import { Link } from 'react-router'
 
 import PKG from '~/../package.json'
+import { useShowContextMenu } from '~/atoms/context-menu'
 import { useScrollViewElement } from '~/components/ui/scroll-area/hooks'
 import type { DB_Repo } from '~/database'
 import { ALL_REPO, useRouteParams, useRouter } from '~/hooks/biz/useRouter'
@@ -18,6 +19,8 @@ import {
   useNotificationUpdatedAt,
 } from '~/store/notification/hooks'
 import { useRepoList } from '~/store/repo/hooks'
+import { getIsRepoPinned } from '~/store/repo-pin/getters'
+import { repoPinAction } from '~/store/repo-pin/store'
 
 import { ScrollArea } from '../../ui/scroll-area/ScrollArea'
 import {
@@ -211,7 +214,7 @@ const ActionGroup = () => {
   return (
     <div className="flex items-center gap-1">
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <button
             type="button"
             className={clsx(
@@ -248,8 +251,41 @@ const RepositoryItem = memo(
     hideAvatar: boolean
     className?: string
   }) => {
+    const showContextMenu = useShowContextMenu()
+
     return (
       <Link
+        onContextMenu={(e) => {
+          if (!repo.id) return
+          const isPinned = getIsRepoPinned(repo.id)
+          showContextMenu(
+            [
+              {
+                label: isPinned ? 'Unpin' : 'Pin',
+                type: 'text',
+
+                click: () => {
+                  if (isPinned) {
+                    repoPinAction.pinRepo(repo.id)
+                  } else {
+                    repoPinAction.unPinRepo(repo.id)
+                  }
+                },
+              },
+              {
+                label: 'Open in browser',
+                click: () => {
+                  window.open(
+                    `https://github.com/${repo.owner.login}/${repo.name}`,
+                    '_blank',
+                  )
+                },
+                type: 'text',
+              },
+            ],
+            e,
+          )
+        }}
         key={repo.id}
         to={`/notifications/${repo.id}`}
         className={cx(

@@ -24,12 +24,12 @@ const TabIndicatorContext = React.createContext<{
   x: number
 } | null>(null)
 
-const Tabs: React.ForwardRefExoticComponent<
+const Tabs: React.FC<
   TabsProps &
     React.RefAttributes<HTMLDivElement> & {
       variant?: 'default' | 'rounded'
     }
-> = React.forwardRef((props, ref) => {
+> = ({ ref, ...props }) => {
   const { children, variant, ...rest } = props
   const [indicator, setIndicator] = React.useState({
     w: 0,
@@ -38,28 +38,29 @@ const Tabs: React.ForwardRefExoticComponent<
   const id = React.useId()
 
   return (
-    <TabsIdContext.Provider value={id}>
-      <SetTabIndicatorContext.Provider value={setIndicator}>
+    <TabsIdContext value={id}>
+      <SetTabIndicatorContext value={setIndicator}>
         <TabsPrimitive.Root {...rest} ref={ref}>
-          <TabIndicatorContext.Provider value={indicator}>
-            <TabVariantContext.Provider value={variant}>
-              {children}
-            </TabVariantContext.Provider>
-          </TabIndicatorContext.Provider>
+          <TabIndicatorContext value={indicator}>
+            <TabVariantContext value={variant}>{children}</TabVariantContext>
+          </TabIndicatorContext>
         </TabsPrimitive.Root>
-      </SetTabIndicatorContext.Provider>
-    </TabsIdContext.Provider>
+      </SetTabIndicatorContext>
+    </TabsIdContext>
   )
-})
+}
 
 export interface TabsListProps
   extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {}
-const TabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  TabsListProps
->(({ className, ...props }, ref) => {
-  const indicator = React.useContext(TabIndicatorContext)
-  const variant = React.useContext(TabVariantContext)
+const TabsList = ({
+  ref,
+  className,
+  ...props
+}: TabsListProps & {
+  ref?: React.RefObject<React.ElementRef<typeof TabsPrimitive.List> | null>
+}) => {
+  const indicator = React.use(TabIndicatorContext)
+  const variant = React.use(TabVariantContext)
 
   return (
     <TabsPrimitive.List
@@ -75,7 +76,7 @@ const TabsList = React.forwardRef<
         className={cx(
           'absolute left-0 duration-200 will-change-[transform,width]',
           variant === 'rounded'
-            ? 'inset-0 z-0 h-[calc(100%-12px)] my-auto rounded bg-muted group-hover:bg-theme-item-hover'
+            ? 'inset-0 z-0 h-[calc(100%-12px)] my-auto rounded bg-muted'
             : 'bottom-0 h-0.5 rounded bg-accent',
         )}
         style={{
@@ -85,7 +86,7 @@ const TabsList = React.forwardRef<
       />
     </TabsPrimitive.List>
   )
-})
+}
 TabsList.displayName = TabsPrimitive.List.displayName
 const tabsTriggerVariants = tv({
   variants: {
@@ -102,62 +103,68 @@ const tabsTriggerVariants = tv({
 
 export interface TabsTriggerProps
   extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> {}
-const TabsTrigger = React.forwardRef<HTMLDivElement, TabsTriggerProps>(
-  ({ className, children, ...props }, ref) => {
-    const variant = React.useContext(TabVariantContext)
-    const triggerRef = React.useRef<HTMLDivElement>(null)
-    React.useImperativeHandle(ref, () => triggerRef.current!, [])
+const TabsTrigger = ({
+  ref,
+  className,
+  children,
+  ...props
+}: TabsTriggerProps & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+  const variant = React.use(TabVariantContext)
+  const triggerRef = React.useRef<HTMLDivElement>(null)
+  React.useImperativeHandle(ref, () => triggerRef.current!, [])
 
-    const setIndicator = React.useContext(SetTabIndicatorContext)
+  const setIndicator = React.use(SetTabIndicatorContext)
 
-    React.useLayoutEffect(() => {
-      if (!triggerRef.current) return
+  React.useLayoutEffect(() => {
+    if (!triggerRef.current) return
 
-      const handler = () => {
-        const trigger = triggerRef.current as HTMLElement
-        const isSelect = trigger.dataset.state === 'active'
-        if (isSelect) {
-          setIndicator({
-            w: trigger.clientWidth,
-            x: trigger.offsetLeft,
-          })
-        }
-      }
-
-      handler()
+    const handler = () => {
       const trigger = triggerRef.current as HTMLElement
-      const ob = new MutationObserver(handler)
-      ob.observe(trigger, {
-        attributes: true,
-        attributeFilter: ['data-state'],
-      })
-
-      return () => {
-        ob.disconnect()
+      const isSelect = trigger.dataset.state === 'active'
+      if (isSelect) {
+        setIndicator({
+          w: trigger.clientWidth,
+          x: trigger.offsetLeft,
+        })
       }
-    }, [setIndicator])
+    }
 
-    return (
-      <TabsPrimitive.Trigger
-        ref={triggerRef as any}
-        className={cx(
-          'inline-flex items-center justify-center whitespace-nowrap px-3 text-sm font-medium ring-offset-background transition-all disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-theme-foreground',
-          'group relative z-[1]',
-          tabsTriggerVariants({ variant }),
-        )}
-        {...props}
-      >
-        {children}
-      </TabsPrimitive.Trigger>
-    )
-  },
-)
+    handler()
+    const trigger = triggerRef.current as HTMLElement
+    const ob = new MutationObserver(handler)
+    ob.observe(trigger, {
+      attributes: true,
+      attributeFilter: ['data-state'],
+    })
+
+    return () => {
+      ob.disconnect()
+    }
+  }, [setIndicator])
+
+  return (
+    <TabsPrimitive.Trigger
+      ref={triggerRef as any}
+      className={cx(
+        'inline-flex items-center justify-center whitespace-nowrap px-3 text-sm font-medium ring-offset-background transition-all disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-theme-foreground',
+        'group relative z-[1]',
+        tabsTriggerVariants({ variant }),
+      )}
+      {...props}
+    >
+      {children}
+    </TabsPrimitive.Trigger>
+  )
+}
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+const TabsContent = ({
+  ref,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content> & {
+  ref?: React.RefObject<React.ElementRef<typeof TabsPrimitive.Content> | null>
+}) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cx(
@@ -166,7 +173,7 @@ const TabsContent = React.forwardRef<
     )}
     {...props}
   />
-))
+)
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
 export { Tabs, TabsContent, TabsList, TabsTrigger }

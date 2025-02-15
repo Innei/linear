@@ -11,3 +11,7 @@ export const dbSchemaV2: SchemaType = {
   issues: '&id',
   pullRequests: '&id',
 }
+
+export const dbSchemaV3: SchemaType = {
+  repoPin: '&id, createdAt, order',
+}

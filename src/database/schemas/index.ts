@@ -17,3 +17,9 @@ export type DB_Meta = {
   name: string
   value: any
 }
+
+export type DB_RepoPin = {
+  id: number
+  createdAt: Date
+  order: number
+}

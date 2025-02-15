@@ -16,7 +16,7 @@ export const useRepoStore = createZustandStore<RepoStoreState>('repo')(() => ({
 const set = useRepoStore.setState
 
 class RepoStoreActionsStatic {
-  upsertMany(data: DB_Repo[]) {
+  upsertManyInStore(data: DB_Repo[]) {
     set((state) => {
       const map = { ...state.repos }
       for (const n of data) {
@@ -25,6 +25,9 @@ class RepoStoreActionsStatic {
 
       return { ...state, repos: map }
     })
+  }
+  upsertMany(data: DB_Repo[]) {
+    this.upsertManyInStore(data)
     RepoService.upsertMany(data)
   }
 }

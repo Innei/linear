@@ -3,10 +3,11 @@ import { LazyMotion, MotionConfig } from 'framer-motion'
 import { Provider } from 'jotai'
 import type { FC, PropsWithChildren } from 'react'
 
-import { Toaster } from '~/components/ui/sonner'
+import { Toaster } from '~/components/ui/toast'
 import { jotaiStore } from '~/lib/jotai'
 import { queryClient } from '~/lib/query-client'
 
+import { ContextMenuProvider } from './context-menu-provider'
 import { SettingSync } from './setting-sync'
 import { StableRouterProvider } from './stable-router-provider'
 
@@ -25,6 +26,7 @@ export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
         <Provider store={jotaiStore}>
           <StableRouterProvider />
           <SettingSync />
+          <ContextMenuProvider />
           {children}
         </Provider>
       </QueryClientProvider>

@@ -14,7 +14,7 @@ class RepoServiceStatic extends BaseService<DB_Repo> implements Hydratable {
 
   async hydrate(): Promise<void> {
     const repos = await this.table.toArray()
-    RepoStoreActions.upsertMany(repos)
+    RepoStoreActions.upsertManyInStore(repos)
   }
 
   async upsert(
