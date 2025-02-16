@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { formatDate } from 'date-fns'
 import { m } from 'framer-motion'
 import { useAtom, useAtomValue } from 'jotai'
-import { memo, useMemo } from 'react'
+import { Fragment, memo, useMemo } from 'react'
 import { Link } from 'react-router'
 
 import PKG from '~/../package.json'
@@ -13,13 +13,16 @@ import { useScrollViewElement } from '~/components/ui/scroll-area/hooks'
 import type { DB_Repo } from '~/database'
 import { ALL_REPO, useRouteParams, useRouter } from '~/hooks/biz/useRouter'
 import { cx } from '~/lib/cn'
+import { pluralizeWord } from '~/lib/i18n'
 import {
   useIsSyncingNotifications,
   useNotificationSyncAt,
   useNotificationUpdatedAt,
 } from '~/store/notification/hooks'
+import { getRepoById } from '~/store/repo/getters'
 import { useRepoList } from '~/store/repo/hooks'
 import { getIsRepoPinned } from '~/store/repo-pin/getters'
+import { usePinRepositories } from '~/store/repo-pin/hooks'
 import { repoPinAction } from '~/store/repo-pin/store'
 
 import { ScrollArea } from '../../ui/scroll-area/ScrollArea'
@@ -37,6 +40,7 @@ export const Sidebar = () => {
       <Logo />
 
       <ScrollArea flex rootClassName="h-0 grow overflow-auto">
+        <PinRepositories />
         <Repositories />
       </ScrollArea>
 
@@ -46,6 +50,64 @@ export const Sidebar = () => {
   )
 }
 
+const PinRepositories = () => {
+  const pinRepositories = usePinRepositories()
+
+  const scrollViewElement = useScrollViewElement()
+  const virtualizer = useVirtualizer({
+    count: pinRepositories.length,
+    getScrollElement: () => scrollViewElement,
+    estimateSize: () => 40,
+    overscan: 5,
+  })
+
+  const routeParams = useRouteParams()
+  if (!routeParams.repoId || pinRepositories.length === 0) {
+    return null
+  }
+
+  return (
+    <div className="flex flex-col px-4 py-2 text-xs text-base-content/50">
+      <span>
+        Pin {pluralizeWord(pinRepositories.length, 'Repository')} (
+        {pinRepositories.length})
+      </span>
+
+      <div
+        className="flex relative mt-4 w-full flex-col"
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          const repoId = pinRepositories[virtualRow.index]
+
+          const repo = getRepoById(repoId)
+          if (!repo) return null
+
+          return (
+            <div
+              className="absolute left-0 top-0 w-full"
+              key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={virtualizer.measureElement}
+              style={{
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <RepositoryItem
+                itemStyle="text-and-avatar"
+                className={undefined}
+                repo={repo}
+                isActive={routeParams.repoId === repo.id.toString()}
+              />
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 const SyncingIndicator = () => {
   const isSyncingNotifications = useIsSyncingNotifications()
   const syncAt = useNotificationSyncAt()
@@ -106,15 +168,20 @@ const Repositories = () => {
   const repoList = useRepoList()
   const { repoId } = useRouteParams()
   const groupItems = useAtomValue(groupItemsAtom)
+  const pinRepositories = usePinRepositories()
 
   const finalList = useMemo(() => {
+    const filteredList = repoList.filter(
+      (repo) => !pinRepositories.includes(repo.id),
+    )
     if (!groupItems) {
-      return repoList
+      return filteredList
     }
-    return [...repoList].sort((a, b) =>
+
+    return [...filteredList].sort((a, b) =>
       a.owner.login.localeCompare(b.owner.login),
     )
-  }, [groupItems, repoList])
+  }, [groupItems, pinRepositories, repoList])
 
   const scrollViewElement = useScrollViewElement()
 
@@ -128,9 +195,11 @@ const Repositories = () => {
   let prevRenderItem: DB_Repo | null = null
 
   return (
-    <div>
+    <Fragment>
       <div className="flex items-center justify-between px-4 py-2 text-xs text-base-content/50">
-        <span>Repositories ({repoList.length})</span>
+        <span>
+          {pluralizeWord(repoList.length, 'Repository')} ({repoList.length})
+        </span>
         <ActionGroup />
       </div>
 
@@ -177,7 +246,7 @@ const Repositories = () => {
                 </a>
               )}
               <RepositoryItem
-                hideAvatar={groupItems}
+                itemStyle={groupItems ? 'text-only' : 'text-and-avatar'}
                 className={groupItems ? 'pl-7' : undefined}
                 repo={repo}
                 isActive={repoId === repo.id.toString()}
@@ -186,7 +255,7 @@ const Repositories = () => {
           )
         })}
       </div>
-    </div>
+    </Fragment>
   )
 }
 
@@ -239,19 +308,23 @@ const ActionGroup = () => {
   )
 }
 
+type RepositoryItemStyle = 'text-only' | 'text-and-avatar'
 const RepositoryItem = memo(
   ({
     repo,
     isActive,
-    hideAvatar,
+
+    itemStyle,
     className,
   }: {
     repo: DB_Repo
     isActive: boolean
-    hideAvatar: boolean
+
+    itemStyle: RepositoryItemStyle
     className?: string
   }) => {
     const showContextMenu = useShowContextMenu()
+    const hideAvatar = itemStyle === 'text-only'
 
     return (
       <Link
@@ -265,7 +338,7 @@ const RepositoryItem = memo(
                 type: 'text',
 
                 click: () => {
-                  if (isPinned) {
+                  if (!isPinned) {
                     repoPinAction.pinRepo(repo.id)
                   } else {
                     repoPinAction.unPinRepo(repo.id)
@@ -293,6 +366,7 @@ const RepositoryItem = memo(
           'hover:bg-zinc-200 dark:hover:bg-neutral-900',
           isActive && 'bg-zinc-200 dark:bg-neutral-900',
           'text-[14px]',
+          !hideAvatar && 'pl-1.5',
           className,
         )}
       >
@@ -310,8 +384,10 @@ const RepositoryItem = memo(
           </TooltipPortal>
 
           <TooltipTrigger asChild>
-            <span className="min-w-0 truncate opacity-90 duration-200 hover:opacity-100">
-              {repo.name}
+            <span className="min-w-0 truncate text-base-content opacity-90 duration-200 hover:opacity-100">
+              {itemStyle === 'text-only'
+                ? repo.name
+                : `${repo.owner.login}/${repo.name}`}
             </span>
           </TooltipTrigger>
         </Tooltip>
