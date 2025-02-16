@@ -23,3 +23,12 @@ export type DB_RepoPin = {
   createdAt: Date
   order: number
 }
+
+export type DB_User = {
+  login: string
+  name: string
+  avatarUrl: string
+  id: number
+
+  isMe: number
+}

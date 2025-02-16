@@ -15,3 +15,11 @@ export const dbSchemaV2: SchemaType = {
 export const dbSchemaV3: SchemaType = {
   repoPin: '&id, createdAt, order',
 }
+
+export const dbSchemaV4: SchemaType = {
+  user: '&id',
+}
+
+export const dbSchemaV5: SchemaType = {
+  user: '&id, login, isMe',
+}

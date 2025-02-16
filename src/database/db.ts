@@ -2,7 +2,13 @@ import Dexie from 'dexie'
 import { exportDB, importDB } from 'dexie-export-import'
 
 import { LOCAL_DB_NAME } from './constants'
-import { dbSchemaV1, dbSchemaV2, dbSchemaV3 } from './db_schema'
+import {
+  dbSchemaV1,
+  dbSchemaV2,
+  dbSchemaV3,
+  dbSchemaV4,
+  dbSchemaV5,
+} from './db_schema'
 import type {
   DB_Issue,
   DB_Meta,
@@ -10,6 +16,7 @@ import type {
   DB_PullRequest,
   DB_Repo,
   DB_RepoPin,
+  DB_User,
 } from './schemas'
 
 export interface LocalDBSchemaMap {
@@ -19,6 +26,7 @@ export interface LocalDBSchemaMap {
   issues: DB_Issue
   pullRequests: DB_PullRequest
   repoPin: DB_RepoPin
+  user: DB_User
 }
 
 // Define a local DB
@@ -29,12 +37,14 @@ class BrowserDB extends Dexie {
   public issues: BrowserDBTable<'issues'>
   public pullRequests: BrowserDBTable<'pullRequests'>
   public repoPin: BrowserDBTable<'repoPin'>
-
+  public user: BrowserDBTable<'user'>
   constructor() {
     super(LOCAL_DB_NAME)
     this.version(1).stores(dbSchemaV1)
     this.version(2).stores(dbSchemaV2)
     this.version(3).stores(dbSchemaV3)
+    this.version(4).stores(dbSchemaV4)
+    this.version(5).stores(dbSchemaV5)
 
     this.repos = this.table('repos')
     this.notifications = this.table('notifications')
@@ -42,6 +52,7 @@ class BrowserDB extends Dexie {
     this.issues = this.table('issues')
     this.pullRequests = this.table('pullRequests')
     this.repoPin = this.table('repoPin')
+    this.user = this.table('user')
   }
 
   export() {
@@ -50,6 +61,11 @@ class BrowserDB extends Dexie {
 
   importDb(data: Blob) {
     return importDB(data, this)
+  }
+
+  clear() {
+    this.delete()
+    window.location.reload()
   }
 }
 

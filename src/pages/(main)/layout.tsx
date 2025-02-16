@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { throttle } from 'es-toolkit'
 import type { PropsWithChildren } from 'react'
 import * as React from 'react'
@@ -18,22 +19,20 @@ import {
   useSidebarColumnShow,
   useSidebarColumnTempShow,
 } from '~/atoms/sidebar'
-import { setUser } from '~/atoms/user'
 import { Sidebar } from '~/components/layout/sidebar/index'
 import { PanelSplitter } from '~/components/ui/divider'
 import { Kbd } from '~/components/ui/kbd/Kbd'
+import { UserService } from '~/database/services/user'
 import { clsxm } from '~/lib/cn'
 import { preventDefault } from '~/lib/dom'
-import { octokit } from '~/lib/octokit'
 
-export const loader = async () => {
-  const { data } = await octokit.rest.users.getAuthenticated()
-  setUser(data)
-
-  return { user: data }
-}
 export const Component = () => {
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useQuery({
+    queryKey: ['me'],
+    queryFn: () => UserService.fetchMe(),
+  })
   return (
     <RootContainer>
       <SidebarResponsiveResizerContainer containerRef={containerRef}>
@@ -171,26 +170,29 @@ const SidebarResponsiveResizerContainer = ({
   )
 }
 
-const RootContainer = ({ ref, children }: PropsWithChildren & { ref?: React.RefObject<HTMLDivElement | null> }) => {
-    const feedColWidth = useUISettingKey('sidebarColWidth')
-    const [elementRef, _setElementRef] = useState<HTMLDivElement | null>(null)
-    const setElementRef = useCallback((el: HTMLDivElement | null) => {
-      _setElementRef(el)
-      setRootContainerElement(el)
-    }, [])
-    React.useImperativeHandle(ref, () => elementRef!)
-    return (
-      <div
-        ref={setElementRef}
-        style={
-          {
-            '--app-sidebar-col-w': `${feedColWidth}px`,
-          } as any
-        }
-        className="flex relative z-0 h-screen overflow-hidden print:h-auto print:overflow-auto"
-        onContextMenu={preventDefault}
-      >
-        {children}
-      </div>
-    )
-  }
+const RootContainer = ({
+  ref,
+  children,
+}: PropsWithChildren & { ref?: React.RefObject<HTMLDivElement | null> }) => {
+  const feedColWidth = useUISettingKey('sidebarColWidth')
+  const [elementRef, _setElementRef] = useState<HTMLDivElement | null>(null)
+  const setElementRef = useCallback((el: HTMLDivElement | null) => {
+    _setElementRef(el)
+    setRootContainerElement(el)
+  }, [])
+  React.useImperativeHandle(ref, () => elementRef!)
+  return (
+    <div
+      ref={setElementRef}
+      style={
+        {
+          '--app-sidebar-col-w': `${feedColWidth}px`,
+        } as any
+      }
+      className="flex relative z-0 h-screen overflow-hidden print:h-auto print:overflow-auto"
+      onContextMenu={preventDefault}
+    >
+      {children}
+    </div>
+  )
+}

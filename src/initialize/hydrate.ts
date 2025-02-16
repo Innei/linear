@@ -3,6 +3,7 @@ import { MetaService } from '~/database/services/meta'
 import { NotificationService } from '~/database/services/notification'
 import { RepoService } from '~/database/services/repo'
 import { RepoPinService } from '~/database/services/repo-pin'
+import { UserService } from '~/database/services/user'
 import { appLog } from '~/lib/log'
 import { sleep } from '~/lib/utils'
 
@@ -24,6 +25,7 @@ export const hydrateDatabaseToStore = async () => {
       RepoService,
       MetaService,
       RepoPinService,
+      UserService,
     ]
     await Promise.all(hydrates.map((h) => h.hydrate()))
 

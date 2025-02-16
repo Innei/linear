@@ -1,4 +1,3 @@
-import * as Avatar from '@radix-ui/react-avatar'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
 import { formatDate } from 'date-fns'
@@ -9,8 +8,18 @@ import { Link } from 'react-router'
 
 import PKG from '~/../package.json'
 import { useShowContextMenu } from '~/atoms/context-menu'
+import { useUser } from '~/atoms/user'
+import { AvatarBase } from '~/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu/DropdownMenu'
 import { useScrollViewElement } from '~/components/ui/scroll-area/hooks'
 import type { DB_Repo } from '~/database'
+import { browserDB } from '~/database'
 import { ALL_REPO, useRouteParams, useRouter } from '~/hooks/biz/useRouter'
 import { cx } from '~/lib/cn'
 import { pluralizeWord } from '~/lib/i18n'
@@ -126,18 +135,61 @@ const SyncingIndicator = () => {
 const Logo = () => {
   // TODO: add logo
   const { navigate } = useRouter()
+
+  const user = useUser()
+
   return (
-    <button
-      onClick={() => {
-        navigate({
-          repo: ALL_REPO,
-        })
-      }}
-      type="button"
-      className="px-8 py-6 text-left text-lg font-bold"
-    >
-      Linear
-    </button>
+    <div className="flex items-center justify-between p-4 text-left text-lg font-bold">
+      <a
+        className="p-2"
+        href="/"
+        onClick={(e) => {
+          e.preventDefault()
+          navigate({
+            repo: ALL_REPO,
+          })
+        }}
+      >
+        Linear
+      </a>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <AvatarBase
+            avatarUrl={user?.avatarUrl ?? ''}
+            login={user?.login ?? ''}
+            className="size-8"
+          />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem className="flex-row gap-2">
+            <AvatarBase
+              avatarUrl={user?.avatarUrl ?? ''}
+              login={user?.login ?? ''}
+              className="size-6"
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-base-content">
+                {user?.name}
+              </span>
+              <span className="text-xs text-base-content/50">
+                @{user?.login}
+              </span>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            icon={<i className="i-mingcute-exit-line" />}
+            onClick={() => {
+              browserDB.clear()
+            }}
+          >
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }
 
@@ -236,25 +288,6 @@ const Repositories = () => {
   )
 }
 
-const AvatarBase = ({
-  avatarUrl,
-  login,
-}: {
-  avatarUrl: string
-  login: string
-}) => {
-  return (
-    <Avatar.Root className="inline-block size-5 shrink-0">
-      <Avatar.Image className="rounded-full" src={avatarUrl} />
-      <Avatar.Fallback
-        delayMs={100}
-        className="center inline-flex rounded-full border text-xs text-base-content/50"
-      >
-        {login.slice(0, 2)}
-      </Avatar.Fallback>
-    </Avatar.Root>
-  )
-}
 const ActionGroup = () => {
   const [groupItems, setGroupItems] = useAtom(groupItemsAtom)
   return (

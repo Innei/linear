@@ -1,5 +1,7 @@
-import { App, Octokit } from 'octokit'
+import { Octokit } from 'octokit'
+
+import { getGHToken } from '~/atoms/app'
 
 export const octokit = new Octokit({
-  auth: import.meta.env.VITE_GH_TOKEN,
+  auth: getGHToken(),
 })
