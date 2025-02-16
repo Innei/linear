@@ -2,7 +2,7 @@
 
 import { Slot } from '@radix-ui/react-slot'
 import { RiLoader2Fill } from '@remixicon/react'
-import { m } from 'framer-motion'
+import { m } from 'motion/react'
 import * as React from 'react'
 import type { VariantProps } from 'tailwind-variants'
 import { tv } from 'tailwind-variants'
@@ -86,21 +86,8 @@ interface ButtonProps
   loadingText?: string
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      asChild,
-      isLoading = false,
-      loadingText,
-      className,
-      disabled,
-      variant,
-      size,
-      flat,
-      children,
-      ...props
-    }: ButtonProps,
-    forwardedRef,
+const Button = (
+    { ref: forwardedRef, asChild, isLoading = false, loadingText, className, disabled, variant, size, flat, children, ...props }: ButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> },
   ) => {
     const Component = asChild ? Slot : m.button
     return (
@@ -130,8 +117,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </Component>
     )
-  },
-)
+  }
 
 Button.displayName = 'Button'
 

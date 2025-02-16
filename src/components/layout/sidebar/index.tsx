@@ -2,8 +2,8 @@ import * as Avatar from '@radix-ui/react-avatar'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
 import { formatDate } from 'date-fns'
-import { m } from 'framer-motion'
 import { useAtom, useAtomValue } from 'jotai'
+import { m } from 'motion/react'
 import { Fragment, memo, useMemo } from 'react'
 import { Link } from 'react-router'
 
@@ -53,14 +53,6 @@ export const Sidebar = () => {
 const PinRepositories = () => {
   const pinRepositories = usePinRepositories()
 
-  const scrollViewElement = useScrollViewElement()
-  const virtualizer = useVirtualizer({
-    count: pinRepositories.length,
-    getScrollElement: () => scrollViewElement,
-    estimateSize: () => 40,
-    overscan: 5,
-  })
-
   const routeParams = useRouteParams()
   if (!routeParams.repoId || pinRepositories.length === 0) {
     return null
@@ -73,28 +65,13 @@ const PinRepositories = () => {
         {pinRepositories.length})
       </span>
 
-      <div
-        className="flex relative mt-4 w-full flex-col"
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualRow) => {
-          const repoId = pinRepositories[virtualRow.index]
-
+      <div className="flex relative mt-4 w-full flex-col gap-1">
+        {pinRepositories.map((repoId) => {
           const repo = getRepoById(repoId)
           if (!repo) return null
 
           return (
-            <div
-              className="absolute left-0 top-0 w-full"
-              key={virtualRow.key}
-              data-index={virtualRow.index}
-              ref={virtualizer.measureElement}
-              style={{
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-            >
+            <div key={repo.id} className="w-full">
               <RepositoryItem
                 itemStyle="text-and-avatar"
                 className={undefined}
@@ -233,7 +210,7 @@ const Repositories = () => {
             >
               {!isEq && groupItems && (
                 <a
-                  className="flex mb-1 mt-3 items-center gap-1.5 text-xs text-base-content/50"
+                  className="flex mb-1 mt-3 items-center gap-2 text-xs text-base-content/50"
                   href={`https://github.com/${repo.owner.login}`}
                   target="_blank"
                   rel="noopener noreferrer"

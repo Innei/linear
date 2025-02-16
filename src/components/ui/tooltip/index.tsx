@@ -1,5 +1,5 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import { m } from 'framer-motion'
+import { m } from 'motion/react'
 import * as React from 'react'
 
 import { clsxm } from '~/lib/cn'
@@ -16,10 +16,7 @@ const Tooltip: typeof TooltipProvider = ({ children, ...props }) => (
 
 const TooltipTrigger = TooltipPrimitive.Trigger
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+const TooltipContent = ({ ref, className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> & { ref?: React.RefObject<React.ElementRef<typeof TooltipPrimitive.Content> | null> }) => (
   <TooltipPrimitive.Content
     ref={ref}
     asChild
@@ -43,7 +40,7 @@ const TooltipContent = React.forwardRef<
       {props.children}
     </m.div>
   </TooltipPrimitive.Content>
-))
+)
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
 export { Tooltip, TooltipContent, TooltipTrigger }

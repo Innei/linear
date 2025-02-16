@@ -10,7 +10,7 @@ import { setAppIsReady } from './atoms/app'
 import { initializeApp } from './initialize'
 import { router } from './router'
 
-initializeApp().finally(() => {
+initializeApp().then(() => {
   setAppIsReady(true)
 })
 
