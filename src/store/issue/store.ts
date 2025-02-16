@@ -59,16 +59,17 @@ class IssueStoreActionStatic {
       })
     }
 
-    issueRequest.fetchByIds(tasks)
+    issueRequest.batchFetch(tasks)
   }
 }
 
 export const issueAction = new IssueStoreActionStatic()
 
+type FetchIssueParams = { owner: string; repo: string; issue_number: number }
 class IssueRequestStatic {
   private q = new AsyncQueue(10)
 
-  fetchByIds(data: { owner: string; repo: string; issue_number: number }[]) {
+  batchFetch(data: FetchIssueParams[]) {
     this.q.addMultiple(
       data.map(({ owner, repo, issue_number }) => async () => {
         const res = await queryClient.fetchQuery({
@@ -81,6 +82,13 @@ class IssueRequestStatic {
         issueService.upsertMany([res.data])
       }),
     )
+  }
+
+  async fetch(params: FetchIssueParams) {
+    const res = await octokit.rest.issues.get(params)
+    issueAction.upsertMany([res.data])
+    issueService.upsertMany([res.data])
+    return res.data
   }
 }
 

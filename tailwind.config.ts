@@ -120,7 +120,7 @@ const twConfig: Config = {
   plugins: [
     iconsPlugin({
       collections: {
-        ...getIconCollections(['mingcute']),
+        ...getIconCollections(['mingcute', 'octicon']),
       },
     }),
 

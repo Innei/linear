@@ -12,6 +12,7 @@ export const useRouteParams = () => {
   const search = useReadonlyRouteSelector((state) => {
     return {
       type: state.searchParams.get('type') as NotificationType,
+      notificationId: state.searchParams.get('notificationId'),
     }
   })
   const params = useReadonlyRouteSelector((state) => {
@@ -21,18 +22,21 @@ export const useRouteParams = () => {
 }
 
 const routerParamsKey = ['repo']
-const routerSearchParamsKey = ['type']
+const routerSearchParamsKey = ['type', 'notificationId']
 
 type RouterParams = {
   repo?: string
+  notificationId?: string
 }
-// type RouterSearchParams = {
-//   type?: NotificationType
-// }
+
 export const useRouter = () => {
   return {
     navigate: useCallback(
-      (params: { type?: NotificationType; repo?: string }) => {
+      (params: {
+        type?: NotificationType
+        repo?: string
+        notificationId?: string
+      }) => {
         const currentRouter = getReadonlyRoute()
 
         const filteredParams = routerParamsKey
