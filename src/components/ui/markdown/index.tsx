@@ -7,35 +7,57 @@ import {
   atomOneDark,
   githubGist,
 } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
 
-import { useThemeAtomValue } from '~/hooks/common'
+import { useIsDark } from '~/hooks/common'
 
 interface MarkdownProps {
   content: string
   className?: string
 }
 
+const CodeBlockContext = React.createContext<boolean>(false)
+
 export const Markdown: React.FC<MarkdownProps> = ({
   content,
   className = '',
 }) => {
-  const theme = useThemeAtomValue()
+  const theme = useIsDark() ? 'dark' : 'light'
+
   return (
     <div className={`prose max-w-none dark:prose-invert ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
         components={{
           a: ({ node, ...props }) => (
             <a target="_blank" rel="noopener noreferrer" {...props} />
           ),
 
-          code: ({ node, inline, className, children, ...props }: any) => {
+          pre: ({ node, className, children, ...props }: any) => {
+            return (
+              <CodeBlockContext value={true}>
+                <pre className={className} {...props}>
+                  {children}
+                </pre>
+              </CodeBlockContext>
+            )
+          },
+          code: ({ node, className, children, ...props }: any) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const isCodeBlock = React.use(CodeBlockContext)
+            if (!isCodeBlock)
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              )
             const match = /language-(\w+)/.exec(className || '')
             const lang = match ? match[1] : ''
             const code = String(children).replace(/\n$/, '')
 
-            return !inline ? (
+            return (
               <SyntaxHighlighter
                 style={theme === 'dark' ? atomOneDark : githubGist}
                 language={lang}
@@ -44,10 +66,6 @@ export const Markdown: React.FC<MarkdownProps> = ({
               >
                 {code}
               </SyntaxHighlighter>
-            ) : (
-              <code className={className} {...props}>
-                {children}
-              </code>
             )
           },
         }}

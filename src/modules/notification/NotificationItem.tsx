@@ -13,7 +13,7 @@ import {
 import { useRouteParams, useRouter } from '~/hooks/biz/useRouter'
 import { cn } from '~/lib/cn'
 import { getGitHubURL } from '~/lib/gh'
-import { parseIssueSubjectUrl } from '~/lib/parser'
+import { parseIssueSubjectUrl, parsePullRequestSubjectUrl } from '~/lib/parser'
 import { useNotification } from '~/store/notification/hooks'
 import { NotificationStoreActions } from '~/store/notification/store'
 import { useRepo } from '~/store/repo/hooks'
@@ -77,15 +77,19 @@ export const NotificationItem = memo(
 
               break
             }
-            case 'PullRequest':
-            // const { owner, repo, pull_request_number } = parseIssueSubjectUrl(
-            //   notification.subject.url,
-            // )
-            // setSelectedNotification({
-            //   type: 'pull_request',
-            //   owner: notification.repository.owner.login,
-            //   repo: notification.repository.name,
-            // })
+            case 'PullRequest': {
+              const { owner, repo, pull_number } = parsePullRequestSubjectUrl(
+                notification.subject.url,
+              )
+              setSelectedNotification({
+                type: 'pull_request',
+                owner,
+                repo,
+                pull_request_number: pull_number,
+              })
+
+              break
+            }
           }
         }}
         onDoubleClick={() => {
