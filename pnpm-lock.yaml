@@ -198,6 +198,9 @@ importers:
       happy-dom:
         specifier: 17.1.0
         version: 17.1.0
+      kolorist:
+        specifier: 1.8.0
+        version: 1.8.0
       lint-staged:
         specifier: 15.4.3
         version: 15.4.3
