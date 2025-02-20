@@ -15,7 +15,7 @@ export const PeekNotification = () => {
     <AnimatePresence>
       {open && (
         <m.div
-          className="flex fixed inset-y-0 right-0 w-[50vw] max-w-[800px] flex-col border-l bg-slate-50 dark:bg-zinc-900"
+          className="flex fixed inset-y-0 right-0 w-[50vw] max-w-[800px] flex-col border-l bg-system-background"
           initial={{ opacity: 0, transform: 'translateX(100%)' }}
           animate={{
             opacity: 1,

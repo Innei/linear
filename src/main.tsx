@@ -1,5 +1,6 @@
 import './scan'
 import './styles/index.css'
+import 'tailwindcss-uikit-colors/selector.css'
 
 import { ClickToComponent } from 'click-to-react-component'
 import * as React from 'react'

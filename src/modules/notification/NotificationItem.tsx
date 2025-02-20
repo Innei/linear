@@ -158,7 +158,7 @@ export const NotificationItem = memo(
           </div>
         </div>
 
-        <div className="ml-2 shrink-0 text-xs tabular-nums text-tertiary">
+        <div className="ml-2 shrink-0 text-xs tabular-nums text-secondary-label">
           <RelativeTime
             displayAbsoluteTimeAfterDay={1}
             date={notification.updated_at}

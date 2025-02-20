@@ -29,7 +29,7 @@ export const Component = () => {
           </TabsList>
         </Tabs>
 
-        <div className="flex absolute inset-y-0 right-2 items-center text-xs text-tertiary">
+        <div className="flex absolute inset-y-0 right-2 items-center text-xs text-secondary-label">
           {length} notifications
         </div>
       </div>

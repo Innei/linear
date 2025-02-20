@@ -4,6 +4,7 @@ import daisyui from 'daisyui'
 import { withTV } from 'tailwind-variants/transformer'
 import type { Config } from 'tailwindcss'
 import defaultTheme from 'tailwindcss/defaultTheme'
+import { colors } from 'tailwindcss-uikit-colors/tailwind'
 
 require('./plugins/css-plugin')
 
@@ -33,6 +34,7 @@ const twConfig: Config = {
       },
 
       colors: {
+        ...colors,
         border: 'hsl(var(--border) / <alpha-value>)',
         sidebar: 'hsl(var(--sidebar) / <alpha-value>)',
         muted: 'hsl(var(--muted) / <alpha-value>)',
