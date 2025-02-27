@@ -8,6 +8,28 @@ import { colors } from 'tailwindcss-uikit-colors/tailwind'
 
 require('./plugins/css-plugin')
 
+const omit = (obj: Record<string, any>, keys: string[]) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !keys.includes(key)),
+  )
+}
+
+const ignoreUIKitColorKeys = [
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'mint',
+  'teal',
+  'cyan',
+  'blue',
+  'indigo',
+  'purple',
+  'pink',
+  'brown',
+  'gray',
+]
+
 const twConfig: Config = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './index.html'],
   darkMode: ['class', '[data-theme="dark"]'],
@@ -34,7 +56,7 @@ const twConfig: Config = {
       },
 
       colors: {
-        ...colors,
+        ...omit(colors, ignoreUIKitColorKeys),
         border: 'hsl(var(--border) / <alpha-value>)',
         sidebar: 'hsl(var(--sidebar) / <alpha-value>)',
         muted: 'hsl(var(--muted) / <alpha-value>)',
