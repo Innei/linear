@@ -71,7 +71,7 @@
     "@octokit/openapi-types": "24.0.0",
     "@tailwindcss/container-queries": "0.1.1",
     "@tailwindcss/typography": "0.5.16",
-    "@types/node": "22.13.11",
+    "@types/node": "22.14.0",
     "@types/pluralize": "0.0.33",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
