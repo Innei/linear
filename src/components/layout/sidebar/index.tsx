@@ -133,7 +133,6 @@ const SyncingIndicator = () => {
 }
 
 const Logo = () => {
-  // TODO: add logo
   const { navigate } = useRouter()
 
   const user = useUser()
@@ -183,6 +182,8 @@ const Logo = () => {
             icon={<i className="i-mingcute-exit-line" />}
             onClick={() => {
               browserDB.clear()
+              localStorage.clear()
+              window.location.reload()
             }}
           >
             Logout

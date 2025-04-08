@@ -1,7 +1,21 @@
 import { Octokit } from 'octokit'
+import { createFetch } from 'ofetch'
 
-import { getGHToken } from '~/atoms/app'
+import { clearGHToken, getGHToken } from '~/atoms/app'
 
+const fetch = createFetch({
+  defaults: {
+    onResponseError: (error) => {
+      if (error.response.status === 401) {
+        clearGHToken()
+        window.location.reload()
+      }
+    },
+  },
+})
 export const octokit = new Octokit({
   auth: getGHToken(),
+  request: {
+    fetch,
+  },
 })

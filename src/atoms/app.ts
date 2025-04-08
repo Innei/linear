@@ -26,3 +26,8 @@ export const [, , useGHToken, , getGHToken, setGHToken] = createAtomHooks(
     getOnInit: true,
   }),
 )
+
+export const clearGHToken = () => {
+  setGHToken('')
+  localStorage.removeItem(getStorageNS('gh-token'))
+}
