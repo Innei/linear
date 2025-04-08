@@ -90,7 +90,7 @@
     "postcss-js": "4.0.1",
     "prettier": "3.5.3",
     "simple-git-hooks": "2.12.1",
-    "tailwind-scrollbar": "4.0.1",
+    "tailwind-scrollbar": "4.0.2",
     "tailwind-variants": "0.3.1",
     "tailwindcss": "^3",
     "tailwindcss-animate": "1.0.7",
