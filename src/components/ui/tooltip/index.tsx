@@ -16,7 +16,16 @@ const Tooltip: typeof TooltipProvider = ({ children, ...props }) => (
 
 const TooltipTrigger = TooltipPrimitive.Trigger
 
-const TooltipContent = ({ ref, className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> & { ref?: React.RefObject<React.ElementRef<typeof TooltipPrimitive.Content> | null> }) => (
+const TooltipContent = ({
+  ref,
+  className,
+  sideOffset = 4,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> & {
+  ref?: React.RefObject<React.ElementRef<
+    typeof TooltipPrimitive.Content
+  > | null>
+}) => (
   <TooltipPrimitive.Content
     ref={ref}
     asChild
@@ -29,10 +38,6 @@ const TooltipContent = ({ ref, className, sideOffset = 4, ...props }: React.Comp
       animate={{ opacity: 1, scale: 1 }}
       transition={{
         type: 'spring',
-        tension: 280,
-        friction: 60,
-
-        duration: 0.1,
       }}
     >
       {/* https://github.com/radix-ui/primitives/discussions/868 */}
