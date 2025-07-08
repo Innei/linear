@@ -36,7 +36,7 @@
     "date-fns": "4.1.0",
     "dexie": "4.0.11",
     "dexie-export-import": "4.1.4",
-    "es-toolkit": "1.39.3",
+    "es-toolkit": "1.39.7",
     "foxact": "0.2.49",
     "github-markdown-css": "5.8.1",
     "immer": "10.1.1",
