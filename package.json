@@ -78,7 +78,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "autoprefixer": "10.4.21",
     "click-to-react-component": "1.1.2",
-    "daisyui": "^4",
+    "daisyui": "^5.0.0",
     "eslint": "9.29.0",
     "eslint-config-hyoban": "4.0.8",
     "fake-indexeddb": "6.0.1",
